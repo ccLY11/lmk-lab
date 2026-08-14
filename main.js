@@ -130,6 +130,44 @@ function saveLocalCopy(formData) {
     }
 }
 
+// ===== 连接预热（关键加速：页面加载时提前握手，用户点提交时复用热连接）=====
+// 浏览器会缓存 DNS + TCP + TLS 到 Supabase 的连接到 keep-alive 池，后续 POST 复用，省 200-800ms
+(function warmupSupabase() {
+    try {
+        // 1. 页面就绪后立即发一个极轻量请求触发完整握手（只查 1 条 id，几字节）
+        const fire = () => {
+            fetch(SUPABASE_URL + "/rest/v1/applications?select=id&limit=1", {
+                method: "GET",
+                headers: {
+                    "apikey": SUPABASE_KEY,
+                    "Authorization": "Bearer " + SUPABASE_KEY
+                },
+                cache: "no-store"  // 不走缓存，强制建立真实连接
+            }).catch(() => { /* 预热失败不影响主流程 */ });
+        };
+        // 2. 优先用 requestIdleCallback 在空闲时触发，避免抢占首屏渲染
+        if ("requestIdleCallback" in window) {
+            requestIdleCallback(fire, { timeout: 1500 });
+        } else if (document.readyState === "complete") {
+            setTimeout(fire, 300);
+        } else {
+            window.addEventListener("load", () => setTimeout(fire, 300));
+        }
+        // 3. 每 40 秒补一次热身，防止 keep-alive 超时被回收（默认 idle 60s 断开）
+        setInterval(() => {
+            try {
+                fetch(SUPABASE_URL + "/rest/v1/applications?select=id&limit=1", {
+                    method: "GET",
+                    headers: { "apikey": SUPABASE_KEY, "Authorization": "Bearer " + SUPABASE_KEY },
+                    cache: "no-store"
+                }).catch(() => {});
+            } catch {}
+        }, 40000);
+    } catch (e) {
+        console.warn("预热连接失败（不影响提交）:", e);
+    }
+})();
+
 // ===== 表单提交 =====
 const joinForm = document.getElementById("joinForm");
 
