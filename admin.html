@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>LMK实验室 · 申请管理后台</title>
+    <script>
+        // 自动重定向到集成版后台
+        // 原因：file:// 协议下不同 HTML 文件的 localStorage 不共享
+        // 集成到 index.html 后，前后台共享同一个 localStorage
+        window.location.replace('index.html#admin');
+    </script>
+    <style>
+        body {
+            font-family: -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
+            background: #0a1428;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .redirect-box {
+            text-align: center;
+        }
+        .redirect-box a {
+            color: #3b82f6;
+            font-size: 16px;
+        }
+        .redirect-hint {
+            color: #9ca3af;
+            font-size: 13px;
+            margin-top: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="redirect-box">
+        <p>正在跳转到后台...</p>
+        <p class="redirect-hint">如未自动跳转，请<a href="index.html#admin">点击这里</a></p>
+    </div>
+</body>
+</html>
