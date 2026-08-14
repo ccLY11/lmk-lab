@@ -109,131 +109,183 @@ const revealObserver = new IntersectionObserver((entries) => {
 
 revealTargets.forEach(el => revealObserver.observe(el));
 
-// ===== 表单提交配置 =====
-// 部署到 GitHub Pages 后，填入你的 Formspree 表单地址，例如 "https://formspree.io/f/xxxxxxxx"
-// 留空则只保存到本地 localStorage（本地试用模式，公网别人提交收不到）
+// ===== 云数据库配置（Supabase）=====
+// 项目部署后保持不变，这两项是公开可见的（受 RLS 策略保护）
+const SUPABASE_URL = "https://idkfeltsswxdlbkduhcs.supabase.co";
+const SUPABASE_KEY = "sb_publishable_fFsZPc15qmDMK8PrQHLYAg_TY4Xrawq";
+
+// （可选）同时发到你邮箱：填入 Formspree endpoint，留空则只存数据库
 const FORMSPREE_ENDPOINT = "";
 
+// ===== 本地存储工具（离线回退用）=====
+const STORAGE_KEY = "lmk_applications";
+function saveLocalCopy(formData) {
+    try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        const applications = raw ? JSON.parse(raw) : [];
+        applications.unshift(formData);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(applications));
+    } catch (err) {
+        console.warn("保存本地副本失败:", err);
+    }
+}
+
 // ===== 表单提交 =====
-const joinForm = document.getElementById('joinForm');
+const joinForm = document.getElementById("joinForm");
 
 if (joinForm) {
-    joinForm.addEventListener('submit', async (e) => {
+    joinForm.addEventListener("submit", async (e) => {
         e.preventDefault();
 
         // 简单验证
-        const required = joinForm.querySelectorAll('[required]');
+        const required = joinForm.querySelectorAll("[required]");
         let valid = true;
         required.forEach(field => {
             if (!field.value.trim()) {
                 valid = false;
-                field.style.borderColor = 'var(--danger)';
-                setTimeout(() => {
-                    field.style.borderColor = '';
-                }, 2000);
+                field.style.borderColor = "var(--danger)";
+                setTimeout(() => { field.style.borderColor = ""; }, 2000);
             }
         });
 
         if (!valid) {
-            showToast('请填写所有必填项', 'error');
+            showToast("请填写所有必填项", "error");
             return;
         }
 
         // 邮箱格式校验
-        const email = document.getElementById('email');
+        const email = document.getElementById("email");
         const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (email && !emailPattern.test(email.value)) {
-            showToast('邮箱格式不正确', 'error');
-            email.style.borderColor = 'var(--danger)';
-            setTimeout(() => { email.style.borderColor = ''; }, 2000);
+            showToast("邮箱格式不正确", "error");
+            email.style.borderColor = "var(--danger)";
+            setTimeout(() => { email.style.borderColor = ""; }, 2000);
             return;
         }
 
         // 手机号简单校验
-        const phone = document.getElementById('phone');
+        const phone = document.getElementById("phone");
         const phonePattern = /^1[3-9]\d{9}$/;
         if (phone && !phonePattern.test(phone.value)) {
-            showToast('手机号格式不正确', 'error');
-            phone.style.borderColor = 'var(--danger)';
-            setTimeout(() => { phone.style.borderColor = ''; }, 2000);
+            showToast("手机号格式不正确", "error");
+            phone.style.borderColor = "var(--danger)";
+            setTimeout(() => { phone.style.borderColor = ""; }, 2000);
             return;
         }
 
-        const btn = joinForm.querySelector('button[type="submit"]');
+        const btn = joinForm.querySelector("button[type='submit']");
         const originalText = btn.textContent;
         btn.disabled = true;
-        btn.textContent = '提交中...';
+        btn.textContent = "提交中...";
 
-        // 收集表单数据
+        // 收集表单数据（注意：数据库是 snake_case，前端用 camelCase）
+        const nowIso = new Date().toISOString();
+        const id = "APP" + Date.now() + Math.floor(Math.random() * 1000);
         const formData = {
-            id: 'APP' + Date.now() + Math.floor(Math.random() * 1000),
-            name: document.getElementById('name').value.trim(),
-            studentId: document.getElementById('studentId').value.trim(),
-            grade: document.getElementById('grade').value,
-            major: document.getElementById('major').value.trim(),
-            phone: document.getElementById('phone').value.trim(),
-            email: document.getElementById('email').value.trim(),
-            direction: document.getElementById('direction').value,
-            experience: document.getElementById('experience').value.trim(),
-            motivation: document.getElementById('motivation').value.trim(),
-            submitTime: new Date().toISOString(),
-            status: 'pending'
+            id: id,
+            name: document.getElementById("name").value.trim(),
+            studentId: document.getElementById("studentId").value.trim(),
+            grade: document.getElementById("grade").value,
+            major: document.getElementById("major").value.trim(),
+            phone: document.getElementById("phone").value.trim(),
+            email: document.getElementById("email").value.trim(),
+            direction: document.getElementById("direction").value,
+            experience: document.getElementById("experience").value.trim(),
+            motivation: document.getElementById("motivation").value.trim(),
+            submitTime: nowIso,
+            status: "pending"
         };
 
+        // 对应数据库字段（snake_case）
+        const payloadForDb = {
+            id: id,
+            name: formData.name,
+            student_id: formData.studentId,
+            grade: formData.grade,
+            major: formData.major,
+            phone: formData.phone,
+            email: formData.email,
+            direction: formData.direction,
+            experience: formData.experience,
+            motivation: formData.motivation,
+            submit_time: nowIso,
+            status: "pending"
+        };
+
+        let savedToDb = false;
+        let errorMsg = null;
+
         try {
-            // 1. 提交到 Formspree（公网收集，发到邮箱）—— 需配置 FORMSPREE_ENDPOINT
+            // 1. 优先写入 Supabase 云数据库（所有终端共享）
+            const supabaseRes = await fetch(SUPABASE_URL + "/rest/v1/applications", {
+                method: "POST",
+                headers: {
+                    "apikey": SUPABASE_KEY,
+                    "Authorization": "Bearer " + SUPABASE_KEY,
+                    "Content-Type": "application/json",
+                    "Prefer": "return=minimal"
+                },
+                body: JSON.stringify(payloadForDb)
+            });
+            if (!supabaseRes.ok) {
+                const text = await supabaseRes.text().catch(() => "");
+                throw new Error("云数据库写入失败: HTTP " + supabaseRes.status + " " + text.slice(0, 120));
+            }
+            savedToDb = true;
+
+            // 2.（可选）同时发送到 Formspree 邮箱
             if (FORMSPREE_ENDPOINT) {
-                const response = await fetch(FORMSPREE_ENDPOINT, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        name: formData.name,
-                        studentId: formData.studentId,
-                        grade: formData.grade,
-                        major: formData.major,
-                        phone: formData.phone,
-                        email: formData.email,
-                        direction: formData.direction,
-                        experience: formData.experience,
-                        motivation: formData.motivation,
-                        submitTime: formData.submitTime,
-                        _subject: 'LMK实验室新申请 - ' + formData.name + ' - ' + formData.direction
-                    })
-                });
-                if (!response.ok) {
-                    throw new Error('Formspree 提交失败: HTTP ' + response.status);
+                try {
+                    await fetch(FORMSPREE_ENDPOINT, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Accept": "application/json"
+                        },
+                        body: JSON.stringify({
+                            name: formData.name,
+                            studentId: formData.studentId,
+                            grade: formData.grade,
+                            major: formData.major,
+                            phone: formData.phone,
+                            email: formData.email,
+                            direction: formData.direction,
+                            experience: formData.experience,
+                            motivation: formData.motivation,
+                            submitTime: formData.submitTime,
+                            _subject: "LMK实验室新申请 - " + formData.name + " - " + formData.direction
+                        })
+                    });
+                } catch (fErr) {
+                    console.warn("Formspree 邮件通知失败（云数据库已写入）:", fErr);
                 }
             }
 
-            // 2. 同时保存到 localStorage（本地备份，后台可查看自己提交的）
-            const STORAGE_KEY = 'lmk_applications';
-            let applications = [];
-            try {
-                const raw = localStorage.getItem(STORAGE_KEY);
-                if (raw) applications = JSON.parse(raw);
-            } catch (err) {
-                console.error('读取已有申请数据失败:', err);
-            }
-            applications.unshift(formData);
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(applications));
+            // 3. 再保存一份到本地（离线副本 + 后台迁移用）
+            saveLocalCopy(formData);
 
-            btn.textContent = '提交成功';
-            showToast('申请已提交，我们将在3个工作日内与您联系', 'success');
+            btn.textContent = "提交成功";
+            showToast("申请已提交，我们将在3个工作日内与您联系", "success");
             joinForm.reset();
-
-            setTimeout(() => {
-                btn.disabled = false;
-                btn.textContent = originalText;
-            }, 2500);
         } catch (err) {
-            console.error('提交失败:', err);
-            showToast('提交失败，请稍后重试或联系管理员', 'error');
+            console.error("提交失败:", err);
+            errorMsg = err.message || String(err);
+
+            // 云写入失败时，回退保存到本地 localStorage（避免数据丢失）
+            saveLocalCopy(formData);
+            btn.textContent = "已暂存本地";
+            showToast("服务器暂不可用，申请已暂存到本机。请稍后刷新重提，或截图联系管理员", "error");
+        }
+
+        setTimeout(() => {
             btn.disabled = false;
             btn.textContent = originalText;
-        }
+            if (errorMsg) {
+                console.info("最后错误信息:", errorMsg, "（如显示 404/401，请在 Supabase SQL Editor 执行建表脚本）");
+            } else if (!savedToDb) {
+                console.info("提示：如仍无法写入云数据库，请检查已在 Supabase SQL Editor 执行建表脚本并启用 Realtime。");
+            }
+        }, 2500);
     });
 }
 
