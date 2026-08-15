@@ -3,6 +3,12 @@
     const loader = document.getElementById('loader');
     if (!loader) return;
 
+    // 后台管理员页面跳过加载动画
+    if (window.__skipLoader) {
+        loader.style.display = 'none';
+        return;
+    }
+
     const fill = loader.querySelector('.loader-progress-fill');
     const percentEl = loader.querySelector('.loader-percent');
     const statusText = loader.querySelector('.loader-status-text');

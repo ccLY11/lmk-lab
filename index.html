@@ -16,6 +16,14 @@
     <!-- ===== 立即启动加载动画（内联脚本，确保第一时间显示）===== -->
     <script>
     (function() {
+        // 后台管理员页面跳过加载动画，保持原布局
+        if (window.location.hash === '#admin') {
+            window.__skipLoader = true;
+            window.__loaderProgress = 100;
+            window.__loaderDone = true;
+            return;
+        }
+
         // 预定义进度变量，main.js 会接管
         window.__loaderProgress = 0;
         window.__loaderDone = false;
@@ -44,7 +52,7 @@
     })();
     </script>
 
-    <!-- ===== 加载动画 ===== -->
+    <!-- ===== 加载动画（后台访问时隐藏）===== -->
     <div id="loader" class="loader" style="position:fixed;top:0;left:0;right:0;bottom:0;width:100vw;height:100vh;z-index:99999;background:#0a1428;display:flex;align-items:center;justify-content:center;flex-direction:column;overflow:hidden;">
         <div class="loader-grid"></div>
         <div class="loader-inner">
