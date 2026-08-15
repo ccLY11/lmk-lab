@@ -1161,42 +1161,24 @@ function initSectionDividers() {
     document.querySelectorAll('.section-divider').forEach(d => io.observe(d));
 }
 
-// ===== 25. Hero 标题打字机循环（3 个标语切换）=====
+// ===== 25. Hero 标题打字机（单条标语）=====
 function initHeroTypewriterLoop() {
     const title = document.querySelector('.hero-title');
     if (!title) return;
 
-    const messages = [
-        '以代码为媒\n探索未知边界',
-        '从代码到产品\n锻造工程能力',
-        '在项目中成长\n于竞赛中蜕变'
-    ];
-    let msgIndex = 0;
+    const fullText = '在项目中成长，于竞赛中蜕变';
     let charIndex = 0;
-    let deleting = false;
+    const target = title.querySelector('.typewriter-loop-text');
+    if (!target) return;
 
     function tick() {
-        const current = messages[msgIndex];
-        const shown = current.slice(0, charIndex).replace(/\n/g, '<br>');
-
-        title.innerHTML = '<span class="typewriter-loop-text">' + shown + '</span><span class="typewriter-cursor">|</span>';
-
-        if (!deleting && charIndex < current.length) {
+        if (charIndex <= fullText.length) {
+            target.textContent = fullText.slice(0, charIndex);
             charIndex++;
-            setTimeout(tick, 90);
-        } else if (!deleting && charIndex === current.length) {
-            deleting = true;
-            setTimeout(tick, 2200); // 停留 2.2s
-        } else if (deleting && charIndex > 0) {
-            charIndex--;
-            setTimeout(tick, 40);
-        } else {
-            deleting = false;
-            msgIndex = (msgIndex + 1) % messages.length;
-            setTimeout(tick, 400);
+            setTimeout(tick, 100);
         }
     }
-    setTimeout(tick, 1200);
+    setTimeout(tick, 600);
 }
 
 // ===== 26. 右侧滚动指示器（当前 section 高亮）=====
