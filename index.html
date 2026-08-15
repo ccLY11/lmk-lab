@@ -13,8 +13,39 @@
 </head>
 <body>
 
+    <!-- ===== 立即启动加载动画（内联脚本，确保第一时间显示）===== -->
+    <script>
+    (function() {
+        // 预定义进度变量，main.js 会接管
+        window.__loaderProgress = 0;
+        window.__loaderDone = false;
+
+        // 立即给 body 加深色背景（防白屏闪烁）
+        document.body.style.background = '#0a1428';
+
+        // 启动进度模拟
+        var progress = 0;
+        var tick = setInterval(function() {
+            progress += (progress < 80 ? 4 + Math.random() * 6 : 2 + Math.random() * 3);
+            progress = Math.min(100, progress);
+            window.__loaderProgress = progress;
+
+            // 尝试更新 DOM（如果元素存在）
+            var fill = document.querySelector('.loader-progress-fill');
+            var pct = document.querySelector('.loader-percent');
+            if (fill) fill.style.right = (100 - progress) + '%';
+            if (pct) pct.textContent = Math.floor(progress) + '%';
+
+            if (progress >= 100) {
+                clearInterval(tick);
+                window.__loaderDone = true;
+            }
+        }, 180);
+    })();
+    </script>
+
     <!-- ===== 加载动画 ===== -->
-    <div id="loader" class="loader">
+    <div id="loader" class="loader" style="position:fixed;top:0;left:0;right:0;bottom:0;width:100vw;height:100vh;z-index:99999;background:#0a1428;display:flex;align-items:center;justify-content:center;flex-direction:column;overflow:hidden;">
         <div class="loader-grid"></div>
         <div class="loader-inner">
             <div class="loader-logo-wrap">
