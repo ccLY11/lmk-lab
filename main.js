@@ -1,3 +1,97 @@
+// ===== 加载动画控制（进度模拟 + 日志打印 + 淡出）=====
+(function initLoader() {
+    const loader = document.getElementById('loader');
+    if (!loader) return;
+
+    const fill = loader.querySelector('.loader-progress-fill');
+    const percentEl = loader.querySelector('.loader-percent');
+    const statusText = loader.querySelector('.loader-status-text');
+    const logEl = loader.querySelector('.loader-log');
+
+    // 模拟加载日志（科技风）
+    const logs = [
+        '> 正在加载实验室核心模块...',
+        '> 初始化数据库连接 [OK]',
+        '> 同步招新信息 [OK]',
+        '> 校验实验室组别配置 [OK]',
+        '> 启动实时订阅通道 [OK]',
+        '> 准备就绪，欢迎加入 LMK 实验室'
+    ];
+    let progress = 0;
+    let logIndex = 0;
+
+    function setStatus(text) { if (statusText) statusText.textContent = text; }
+    function addLog(text) {
+        if (!logEl) return;
+        const line = document.createElement('div');
+        line.className = 'log-line';
+        line.textContent = text;
+        logEl.appendChild(line);
+    }
+    function updateProgress(v) {
+        progress = Math.min(100, v);
+        if (fill) fill.style.right = (100 - progress) + '%';
+        if (percentEl) percentEl.textContent = Math.floor(progress) + '%';
+    }
+
+    // 模拟进度推进
+    const tick = setInterval(() => {
+        const step = progress < 80 ? 4 + Math.random() * 6 : 2 + Math.random() * 3;
+        updateProgress(progress + step);
+
+        // 按 progress 阶段打印日志
+        const targetLogIndex = Math.min(logs.length, Math.floor(progress / (100 / logs.length)));
+        while (logIndex < targetLogIndex) {
+            addLog(logs[logIndex]);
+            logIndex++;
+        }
+        // 跟随进度更新状态文本
+        if (progress < 30) setStatus('系统初始化中');
+        else if (progress < 60) setStatus('同步实验室数据');
+        else if (progress < 90) setStatus('准备招新通道');
+        else setStatus('即将进入实验室');
+
+        if (progress >= 100) {
+            clearInterval(tick);
+            while (logIndex < logs.length) { addLog(logs[logIndex]); logIndex++; }
+            finish();
+        }
+    }, 180);
+
+    function finish() {
+        // 真实页面加载完成 + 至少展示 1.8s，再对焦过渡
+        const minDisplayTime = 1800;
+        const start = performance.now();
+        function tryFocus() {
+            const elapsed = performance.now() - start;
+            if (document.readyState === 'complete' && elapsed >= minDisplayTime) {
+                // 1. 触发对焦过渡：loader 失焦模糊+淡出，主页面对焦清晰浮现
+                loader.classList.add('focusing');
+                const frontApp = document.getElementById('frontApp');
+                if (frontApp) frontApp.classList.add('entered');
+                // 2. 等过渡完成（0.95s 失焦 + 1.05s 对焦尾段）
+                setTimeout(() => {
+                    if (loader.parentNode) loader.parentNode.removeChild(loader);
+                }, 1200);
+            } else {
+                setTimeout(tryFocus, 120);
+            }
+        }
+        tryFocus();
+    }
+
+    // 兜底：超过 6 秒强制对焦，防止卡死
+    setTimeout(() => {
+        if (!loader.classList.contains('focusing')) {
+            updateProgress(100);
+            loader.classList.add('focusing');
+            const frontApp = document.getElementById('frontApp');
+            if (frontApp) frontApp.classList.add('entered');
+            setTimeout(() => { if (loader.parentNode) loader.parentNode.removeChild(loader); }, 1200);
+        }
+    }, 6000);
+})();
+
 // ===== 导航栏滚动效果 =====
 const header = document.getElementById('header');
 const backTop = document.getElementById('backTop');
@@ -534,6 +628,36 @@ function initMouseInteractions() {
 
     // 15. Hero 区域数据流背景
     initDataStreamBg();
+
+    // 16. 滚动入场动画（错落淡入上移）
+    initScrollReveal();
+
+    // 17. 磁吸 CTA 按钮
+    initMagneticButtons();
+
+    // 18. 卡片 spotlight 光带
+    initCardSpotlight();
+
+    // 19. 大背景柔光跟随鼠标
+    initAmbientGlow();
+
+    // 20. 标题逐字渐入
+    initTitleCharReveal();
+
+    // 22. Hero 区 3D 透视网格地形
+    initHero3DGrid();
+
+    // 23. 滚动视差
+    initScrollParallax();
+
+    // 24. Section 之间的扫描线分隔
+    initSectionDividers();
+
+    // 25. Hero 标题打字机循环（覆盖原 .hero-title 内容）
+    initHeroTypewriterLoop();
+
+    // 26. 右侧滚动指示器
+    initScrollSpy();
 }
 
 // ===== 粒子网络背景 =====
@@ -799,3 +923,368 @@ function initDataStreamBg() {
 
     setInterval(addColumn, 600);
 }
+
+// ===== 16. 滚动入场动画（IntersectionObserver + 错落淡入上移）=====
+function initScrollReveal() {
+    // 注意：.section-title 由 initTitleCharReveal 单独处理，此处排除避免双重动画
+    const targets = document.querySelectorAll(
+        '.section-sub, .research-card, .gallery-item, .info-card, ' +
+        '.award-summary-item, .hero-stat, .hero-actions, .join-form-wrap, .footer-inner'
+    );
+    targets.forEach((el, i) => {
+        el.classList.add('reveal-init');
+        el.style.transitionDelay = (i % 6) * 80 + 'ms';
+    });
+    const io = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('reveal-in');
+                io.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
+    targets.forEach(el => io.observe(el));
+}
+
+// ===== 17. 磁吸 CTA 按钮（鼠标靠近时按钮被吸引位移）=====
+function initMagneticButtons() {
+    const magnets = document.querySelectorAll('.btn-primary, .btn-outline, .hero-btn, .join-btn');
+    magnets.forEach(btn => {
+        btn.addEventListener('mousemove', (e) => {
+            const rect = btn.getBoundingClientRect();
+            const x = e.clientX - rect.left - rect.width / 2;
+            const y = e.clientY - rect.top - rect.height / 2;
+            btn.style.transform = `translate(${x * 0.25}px, ${y * 0.35}px)`;
+        });
+        btn.addEventListener('mouseleave', () => {
+            btn.style.transform = '';
+            btn.style.transition = 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)';
+            setTimeout(() => btn.style.transition = '', 400);
+        });
+        btn.addEventListener('mouseenter', () => {
+            btn.style.transition = 'transform 0.15s ease-out';
+        });
+    });
+}
+
+// ===== 18. 卡片 spotlight 光带（悬停时光跟随鼠标扫过卡片）=====
+function initCardSpotlight() {
+    const cards = document.querySelectorAll('.research-card, .gallery-item, .info-card, .award-summary-item');
+    cards.forEach(card => {
+        card.classList.add('spotlight-card');
+        card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            card.style.setProperty('--spot-x', x + 'px');
+            card.style.setProperty('--spot-y', y + 'px');
+        });
+    });
+}
+
+// ===== 19. 大背景柔光跟随鼠标（沉浸感增强，非小点）=====
+function initAmbientGlow() {
+    const glow = document.createElement('div');
+    glow.className = 'ambient-glow';
+    document.body.appendChild(glow);
+
+    let tx = window.innerWidth / 2, ty = window.innerHeight / 2;
+    let cx = tx, cy = ty;
+
+    document.addEventListener('mousemove', (e) => {
+        tx = e.clientX;
+        ty = e.clientY;
+    });
+
+    function loop() {
+        cx += (tx - cx) * 0.06;
+        cy += (ty - cy) * 0.06;
+        glow.style.transform = `translate(${cx - 250}px, ${cy - 250}px)`;
+        requestAnimationFrame(loop);
+    }
+    loop();
+
+    // 鼠标离开页面时淡出
+    document.addEventListener('mouseleave', () => glow.style.opacity = '0');
+    document.addEventListener('mouseenter', () => glow.style.opacity = '');
+}
+
+// ===== 20. 标题逐字渐入（适用 section-title）=====
+function initTitleCharReveal() {
+    const titles = document.querySelectorAll('.section-title');
+    titles.forEach(title => {
+        if (title.dataset.charInit) return;
+        title.dataset.charInit = '1';
+        const text = title.textContent;
+        title.textContent = '';
+        [...text].forEach((ch, i) => {
+            const span = document.createElement('span');
+            span.className = 'char';
+            span.textContent = ch === ' ' ? '\u00A0' : ch;
+            span.style.animationDelay = (i * 50) + 'ms';
+            title.appendChild(span);
+        });
+    });
+
+    const io = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('char-in');
+                io.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.5 });
+    titles.forEach(t => io.observe(t));
+}
+
+// ===== 22. Hero 区 3D 透视网格地形（未来科技感）=====
+function initHero3DGrid() {
+    const hero = document.querySelector('.hero');
+    if (!hero) return;
+
+    const wrap = document.createElement('div');
+    wrap.className = 'hero-3d-grid';
+    hero.appendChild(wrap);
+
+    const canvas = document.createElement('canvas');
+    canvas.width = 1200;
+    canvas.height = 400;
+    wrap.appendChild(canvas);
+    const ctx = canvas.getContext('2d');
+
+    let t = 0;
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.strokeStyle = 'rgba(30, 64, 175, 0.35)';
+        ctx.lineWidth = 1;
+
+        // 横向网格线（透视，远处密近处疏）
+        for (let i = 0; i < 16; i++) {
+            const yProgress = (i / 16 + (t * 0.0008)) % 1;
+            const y = canvas.height * 0.3 + Math.pow(yProgress, 2) * canvas.height * 0.7;
+            const alpha = Math.min(yProgress * 1.5, 1) * 0.35;
+            ctx.strokeStyle = `rgba(30, 64, 175, ${alpha})`;
+            ctx.beginPath();
+            ctx.moveTo(0, y);
+            ctx.lineTo(canvas.width, y);
+            ctx.stroke();
+        }
+
+        // 纵向网格线（向远处汇聚）
+        const vp = { x: canvas.width / 2, y: canvas.height * 0.3 };
+        for (let i = -8; i <= 8; i++) {
+            const xBottom = canvas.width / 2 + i * (canvas.width / 14);
+            ctx.strokeStyle = 'rgba(30, 64, 175, 0.25)';
+            ctx.beginPath();
+            ctx.moveTo(vp.x, vp.y);
+            ctx.lineTo(xBottom, canvas.height);
+            ctx.stroke();
+        }
+
+        // 顶部光晕
+        const grad = ctx.createRadialGradient(vp.x, vp.y, 0, vp.x, vp.y, 200);
+        grad.addColorStop(0, 'rgba(96, 165, 250, 0.25)');
+        grad.addColorStop(1, 'rgba(96, 165, 250, 0)');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        t++;
+        requestAnimationFrame(draw);
+    }
+    draw();
+}
+
+// ===== 23. 滚动视差（背景元素相对前景慢速移动）=====
+function initScrollParallax() {
+    const parallaxTargets = document.querySelectorAll(
+        '.hero-bg-grid, .hero-glow, .hero-3d-grid, .data-stream'
+    );
+    if (!parallaxTargets.length) return;
+
+    let ticking = false;
+    function update() {
+        const sy = window.scrollY;
+        parallaxTargets.forEach((el, i) => {
+            const speed = 0.15 + (i % 3) * 0.08;
+            el.style.transform = `translateY(${sy * speed * -1}px)`;
+        });
+        ticking = false;
+    }
+
+    window.addEventListener('scroll', () => {
+        if (!ticking) {
+            requestAnimationFrame(update);
+            ticking = true;
+        }
+    }, { passive: true });
+}
+
+// ===== 24. Section 之间的扫描线分隔（进入视口时扫过）=====
+function initSectionDividers() {
+    const sections = document.querySelectorAll('section[id]');
+    sections.forEach(section => {
+        const divider = document.createElement('div');
+        divider.className = 'section-divider';
+        const line = document.createElement('div');
+        line.className = 'section-divider-line';
+        divider.appendChild(line);
+        section.insertBefore(divider, section.firstChild);
+    });
+
+    const io = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('scanned');
+                io.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.15 });
+    document.querySelectorAll('.section-divider').forEach(d => io.observe(d));
+}
+
+// ===== 25. Hero 标题打字机循环（3 个标语切换）=====
+function initHeroTypewriterLoop() {
+    const title = document.querySelector('.hero-title');
+    if (!title) return;
+
+    const messages = [
+        '以代码为媒\n探索未知边界',
+        '从代码到产品\n锻造工程能力',
+        '在项目中成长\n于竞赛中蜕变'
+    ];
+    let msgIndex = 0;
+    let charIndex = 0;
+    let deleting = false;
+
+    function tick() {
+        const current = messages[msgIndex];
+        const shown = current.slice(0, charIndex).replace(/\n/g, '<br>');
+
+        title.innerHTML = '<span class="typewriter-loop-text">' + shown + '</span><span class="typewriter-cursor">|</span>';
+
+        if (!deleting && charIndex < current.length) {
+            charIndex++;
+            setTimeout(tick, 90);
+        } else if (!deleting && charIndex === current.length) {
+            deleting = true;
+            setTimeout(tick, 2200); // 停留 2.2s
+        } else if (deleting && charIndex > 0) {
+            charIndex--;
+            setTimeout(tick, 40);
+        } else {
+            deleting = false;
+            msgIndex = (msgIndex + 1) % messages.length;
+            setTimeout(tick, 400);
+        }
+    }
+    setTimeout(tick, 1200);
+}
+
+// ===== 26. 右侧滚动指示器（当前 section 高亮）=====
+function initScrollSpy() {
+    const sections = Array.from(document.querySelectorAll('section[id]'));
+    if (!sections.length) return;
+
+    const indicator = document.createElement('div');
+    indicator.className = 'scroll-spy';
+    indicator.innerHTML = sections.map((s, i) =>
+        `<a href="#${s.id}" class="scroll-spy-dot" data-target="${s.id}" title="${s.id}"></a>`
+    ).join('');
+    document.body.appendChild(indicator);
+
+    const dots = indicator.querySelectorAll('.scroll-spy-dot');
+
+    function update() {
+        const scrollY = window.scrollY + 200;
+        let activeIdx = 0;
+        sections.forEach((s, i) => {
+            if (scrollY >= s.offsetTop) activeIdx = i;
+        });
+        dots.forEach((d, i) => d.classList.toggle('active', i === activeIdx));
+    }
+    window.addEventListener('scroll', update, { passive: true });
+    update();
+
+    // 点击平滑滚动
+    dots.forEach(d => {
+        d.addEventListener('click', (e) => {
+            e.preventDefault();
+            const target = document.getElementById(d.dataset.target);
+            if (target) target.scrollIntoView({ behavior: 'smooth' });
+        });
+    });
+}
+
+// ===== 27. 触摸涟漪（手机端点击扩散光环）=====
+(function initTouchRipple() {
+    if (!('ontouchstart' in window)) return;
+    document.addEventListener('touchstart', (e) => {
+        for (const touch of e.touches) {
+            const ripple = document.createElement('div');
+            ripple.className = 'touch-ripple';
+            ripple.style.left = touch.clientX + 'px';
+            ripple.style.top = touch.clientY + 'px';
+            document.body.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 900);
+        }
+    }, { passive: true });
+})();
+
+// ===== 28. 触摸按压反馈（按钮/卡片按压感+蓝色光晕）=====
+(function initTouchPress() {
+    if (!('ontouchstart' in window)) return;
+    const targets = document.querySelectorAll('.btn, .group-card, .award-card, .nav-link, .research-card');
+    targets.forEach(el => {
+        el.addEventListener('touchstart', () => el.classList.add('touch-pressed'), { passive: true });
+        el.addEventListener('touchend', () => {
+            el.classList.remove('touch-pressed');
+            setTimeout(() => el.classList.remove('touch-pressed'), 200);
+        }, { passive: true });
+        el.addEventListener('touchcancel', () => el.classList.remove('touch-pressed'), { passive: true });
+    });
+})();
+
+// ===== 29. 触摸拖动光迹（手指滑动留下柔和蓝色光迹）=====
+(function initTouchTrail() {
+    if (!('ontouchstart' in window)) return;
+    let lastTime = 0;
+    document.addEventListener('touchmove', (e) => {
+        const now = Date.now();
+        if (now - lastTime < 40) return;
+        lastTime = now;
+        for (const touch of e.touches) {
+            const dot = document.createElement('div');
+            dot.className = 'touch-trail';
+            dot.style.left = touch.clientX + 'px';
+            dot.style.top = touch.clientY + 'px';
+            document.body.appendChild(dot);
+            setTimeout(() => dot.remove(), 700);
+        }
+    }, { passive: true });
+})();
+
+// ===== 30. 触摸卡片3D倾斜（手指在卡片上滑动，卡片3D跟随倾斜）=====
+(function initTouchTilt() {
+    if (!('ontouchstart' in window)) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const cards = document.querySelectorAll('.group-card, .award-card, .research-card, .hero-card');
+    cards.forEach(card => {
+        card.style.transition = 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)';
+        card.addEventListener('touchmove', (e) => {
+            const touch = e.touches[0];
+            const rect = card.getBoundingClientRect();
+            const x = (touch.clientX - rect.left) / rect.width;
+            const y = (touch.clientY - rect.top) / rect.height;
+            if (x < 0 || x > 1 || y < 0 || y > 1) return;
+            const rotateX = (y - 0.5) * -12;
+            const rotateY = (x - 0.5) * 12;
+            card.style.transform = `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
+        }, { passive: true });
+        card.addEventListener('touchend', () => {
+            card.style.transform = '';
+        }, { passive: true });
+        card.addEventListener('touchcancel', () => {
+            card.style.transform = '';
+        }, { passive: true });
+    });
+})();
