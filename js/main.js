@@ -636,8 +636,7 @@ function initMouseInteractions() {
     // 11. 鼠标拖尾光线效果
     initMouseTrail();
 
-    // 12. 标题打字机+光标效果
-    initTypewriterEffect();
+    // 12. 标题打字机 — 已由 #25 initHeroTypewriterLoop 接管，跳过旧版 initTypewriterEffect()
 
     // 13. 滚动进度条
     initScrollProgress();
@@ -673,7 +672,7 @@ function initMouseInteractions() {
     initSectionDividers();
 
     // 25. Hero 标题打字机循环（覆盖原 .hero-title 内容）
-    initHeroTypewriterLoop();
+    try { initHeroTypewriterLoop(); } catch(e) { console.warn('typewriter fail:', e); }
 
     // 26. 右侧滚动指示器
     initScrollSpy();
@@ -1167,18 +1166,20 @@ function initHeroTypewriterLoop() {
     if (!title) return;
 
     const fullText = '在项目中成长，于竞赛中蜕变';
-    let charIndex = 0;
     const target = title.querySelector('.typewriter-loop-text');
     if (!target) return;
+
+    target.textContent = '';
+    let charIndex = 0;
 
     function tick() {
         if (charIndex <= fullText.length) {
             target.textContent = fullText.slice(0, charIndex);
             charIndex++;
-            setTimeout(tick, 100);
+            setTimeout(tick, 95);
         }
     }
-    setTimeout(tick, 600);
+    setTimeout(tick, 400);
 }
 
 // ===== 26. 右侧滚动指示器（当前 section 高亮）=====

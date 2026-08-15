@@ -1828,9 +1828,10 @@ body { perspective: none; }
 /* ===== 25. Hero 标题打字机 ===== */
 .typewriter-loop-text {
     border-right: none;
-    display: inline;
+    display: inline-block;
     min-width: 440px;
     white-space: nowrap;
+    vertical-align: bottom;
 }
 .typewriter-cursor {
     display: inline-block;
