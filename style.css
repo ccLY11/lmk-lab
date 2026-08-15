@@ -329,6 +329,9 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
     color: #fff;
     margin-bottom: 24px;
     letter-spacing: -0.5px;
+    min-width: 540px;
+    display: block;
+    white-space: nowrap;
 }
 .hero-desc {
     font-size: 15px;
@@ -1144,6 +1147,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
     }
     .hero-title {
         font-size: 32px;
+        min-width: 390px;
     }
     .hero-stats {
         grid-template-columns: repeat(2, 1fr);
@@ -1821,9 +1825,12 @@ body { perspective: none; }
     left: 100%;
 }
 
-/* ===== 25. Hero 标题打字机循环 ===== */
+/* ===== 25. Hero 标题打字机 ===== */
 .typewriter-loop-text {
     border-right: none;
+    display: inline;
+    min-width: 440px;
+    white-space: nowrap;
 }
 .typewriter-cursor {
     display: inline-block;
