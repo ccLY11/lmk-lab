@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://idkfeltsswxdlbkduhcs.supabase.co" crossorigin>
     <link rel="dns-prefetch" href="https://idkfeltsswxdlbkduhcs.supabase.co">
-    <link rel="stylesheet" href="css/style.css?v=loaderPro3">
+    <link rel="stylesheet" href="css/style.css?v=mobiNav1">
     <link rel="stylesheet" href="css/admin.css">
     <link rel="stylesheet" href="css/detail-panel-override.css?v=v2025">
 </head>
@@ -1309,6 +1309,81 @@
         </div>
     </footer>
 
+    <!-- ===== 移动端专用底部科技风跳转导航栏 ===== -->
+    <nav class="mobi-nav" aria-label="移动端页面跳转">
+        <div class="mobi-nav-frame" aria-hidden="true">
+            <span class="mnf mnf-tl"></span><span class="mnf mnf-tr"></span>
+            <span class="mnf mnf-bl"></span><span class="mnf mnf-br"></span>
+        </div>
+        <div class="mobi-nav-scan" aria-hidden="true"></div>
+        <ul class="mobi-nav-list">
+            <li>
+                <a href="?page=index" class="mobi-nav-link" data-page="index" title="首页">
+                    <span class="mnl-num">01</span>
+                    <span class="mnl-ico mnl-ico-home">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11 12 3l9 8"/><path d="M5 10v10h14V10"/></svg>
+                    </span>
+                    <span class="mnl-txt">首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="?page=about" class="mobi-nav-link" data-page="about" title="实验室简介">
+                    <span class="mnl-num">02</span>
+                    <span class="mnl-ico mnl-ico-about">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 2"/></svg>
+                    </span>
+                    <span class="mnl-txt">简介</span>
+                </a>
+            </li>
+            <li>
+                <a href="?page=research" class="mobi-nav-link" data-page="research" title="研究方向">
+                    <span class="mnl-num">03</span>
+                    <span class="mnl-ico mnl-ico-research">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16"/><path d="M6 20V9l6-5 6 5v11"/><path d="M9 20v-6h6v6"/></svg>
+                    </span>
+                    <span class="mnl-txt">研究</span>
+                </a>
+            </li>
+            <li>
+                <a href="?page=awards" class="mobi-nav-link" data-page="awards" title="奖项成就">
+                    <span class="mnl-num">04</span>
+                    <span class="mnl-ico mnl-ico-awards">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8"/><path d="M12 17v4"/><circle cx="12" cy="9" r="6"/><path d="M16 4h3v3"/><path d="M8 4H5v3"/></svg>
+                    </span>
+                    <span class="mnl-txt">奖项</span>
+                </a>
+            </li>
+            <li>
+                <a href="?page=groups" class="mobi-nav-link" data-page="groups" title="实验室组别">
+                    <span class="mnl-num">05</span>
+                    <span class="mnl-ico mnl-ico-groups">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="7" height="7" rx="1"/><rect x="14" y="4" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+                    </span>
+                    <span class="mnl-txt">组别</span>
+                </a>
+            </li>
+            <li>
+                <a href="?page=teachers" class="mobi-nav-link" data-page="teachers" title="指导老师">
+                    <span class="mnl-num">06</span>
+                    <span class="mnl-ico mnl-ico-teachers">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7l8-3 8 3v5c0 4-3.5 7-8 7s-8-3-8-7V7z"/><path d="M8 21h8"/></svg>
+                    </span>
+                    <span class="mnl-txt">老师</span>
+                </a>
+            </li>
+            <li>
+                <a href="?page=join" class="mobi-nav-link mnl-primary" data-page="join" title="加入我们">
+                    <span class="mnl-num">07</span>
+                    <span class="mnl-ico mnl-ico-join">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+                    </span>
+                    <span class="mnl-txt">加入</span>
+                    <span class="mnl-hot">HOT</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
     <button class="back-top" id="backTop" aria-label="返回顶部">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M12 19V5M5 12l7-7 7 7"/>
@@ -1717,7 +1792,7 @@
     </div>
 </div>
 
-    <script src="js/main.js?v=loaderPro3"></script>
-    <script src="js/admin.js?v=loaderPro3"></script>
+    <script src="js/main.js?v=mobiNav1"></script>
+    <script src="js/admin.js?v=mobiNav1"></script>
 </body>
 </html>

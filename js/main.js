@@ -1794,6 +1794,12 @@ function initPageRouter() {
             if (dp === page) l.classList.add('active');
             else l.classList.remove('active');
         });
+        const mobiLinks = document.querySelectorAll('.mobi-nav-link');
+        mobiLinks.forEach(l => {
+            const dp = l.getAttribute('data-page');
+            if (dp === page) l.classList.add('is-active');
+            else l.classList.remove('is-active');
+        });
     }
 
     // 创建或获取过渡遮罩
