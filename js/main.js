@@ -1,3 +1,61 @@
+// ===== 动态注入样式（修复详情面板背景颜色）=====
+(function injectStyles() {
+    const styleId = 'dynamic-detail-styles';
+    if (document.getElementById(styleId)) return;
+    
+    const style = document.createElement('style');
+    style.id = styleId;
+    style.textContent = `
+        .detail-desc-wrap {
+            background: linear-gradient(180deg, rgba(20,40,75,0.92), rgba(10,22,45,0.96)) !important;
+            border: 1px solid rgba(59,130,246,0.25) !important;
+            border-left: 3px solid rgba(96,165,250,0.9) !important;
+            border-radius: 6px !important;
+        }
+        .detail-desc {
+            color: rgba(210,222,240,0.95) !important;
+            text-shadow: 0 0 2px rgba(0,0,0,0.3);
+        }
+        .tech-pill {
+            background: linear-gradient(135deg, rgba(22,45,90,0.92), rgba(10,22,45,0.97)) !important;
+            border: 1px solid rgba(59,130,246,0.35) !important;
+            border-radius: 5px !important;
+            color: #c7dbfb !important;
+            box-shadow: inset 0 1px 0 rgba(147,197,253,0.08);
+        }
+        .skill-name {
+            color: #d0daea !important;
+            text-shadow: 0 0 2px rgba(0,0,0,0.5);
+        }
+        .skill-bar {
+            height: 8px !important;
+            background: linear-gradient(180deg, #0a1428, #060c18) !important;
+            border-radius: 4px !important;
+            border: 1px solid rgba(59,130,246,0.3) !important;
+            box-shadow: inset 0 2px 6px rgba(0,0,0,0.6);
+        }
+        .skill-fill {
+            border-radius: 4px !important;
+            box-shadow: 0 0 10px rgba(96,165,250,0.6) !important;
+        }
+        .skill-value {
+            color: #7db8fa !important;
+            text-shadow: 0 0 4px rgba(59,130,246,0.5);
+        }
+        .project-card {
+            background: linear-gradient(180deg, rgba(16,32,64,0.92), rgba(8,18,38,0.97)) !important;
+            border: 1px solid rgba(59,130,246,0.25) !important;
+            border-radius: 6px !important;
+            box-shadow: inset 0 1px 0 rgba(147,197,253,0.05);
+        }
+        .project-desc {
+            color: rgba(180,195,220,0.88) !important;
+            text-shadow: 0 0 2px rgba(0,0,0,0.3);
+        }
+    `;
+    document.head.appendChild(style);
+})();
+
 // ===== 加载动画控制（进度模拟 + 日志打印 + 淡出）=====
 (function initLoader() {
     const loader = document.getElementById('loader');
@@ -1296,3 +1354,327 @@ function initScrollSpy() {
         }, { passive: true });
     });
 })();
+
+// ===== 18. 组别详情切换（科技感丝滑过渡）=====
+(function initGroupDetail() {
+    const overlay  = document.getElementById('groupDetailOverlay');
+    if (!overlay) return;
+
+    const items        = document.querySelectorAll('.gallery-item[data-group]');
+    const panel        = overlay.querySelector('.detail-panel');
+    const scanLine     = overlay.querySelector('.scan-line');
+    const scanLineRev  = overlay.querySelector('.scan-line-reverse');
+    const backdrop     = overlay.querySelector('.detail-backdrop');
+    const closeBtn     = document.getElementById('detailClose');
+    const dsbText      = document.getElementById('dsbText');
+
+    // 详情数据填充节点
+    const tagEl        = document.getElementById('detailTag');
+    const codeEl       = document.getElementById('detailCode');
+    const titleEl      = document.getElementById('detailTitle');
+    const subtitleEl   = document.getElementById('detailSubtitle');
+    const descEl       = document.getElementById('detailDesc');
+    const techGridEl   = document.getElementById('detailTechGrid');
+    const skillsEl     = document.getElementById('detailSkills');
+    const projectsEl   = document.getElementById('detailProjects');
+
+    if (!items.length || !panel || !closeBtn) return;
+
+    /* ==========================================================
+       5 个组别的详细介绍数据
+       ========================================================== */
+    const GROUP_DATA = {
+        frontend: {
+            tag: 'FRONTEND',
+            code: '// 0x01',
+            title: '前端组',
+            subtitle: 'Frontend Development Group',
+            statusText: 'GROUP_DETAIL // FRONTEND_MODULE_LOADED',
+            desc: '前端组负责实验室所有 Web 与客户端界面的开发工作，覆盖从设计稿到上线全流程。我们追求像素级的视觉还原、丝滑的交互动效，以及极致的性能体验。组内成员均熟悉现代前端工程化体系，并具备扎实的设计审美。',
+            techStack: ['HTML5', 'CSS3', 'JavaScript', 'TypeScript', 'React', 'Vue 3', 'Next.js', 'TailwindCSS', 'Vite', 'Git'],
+            skills: [
+                { name: 'HTML/CSS', value: 95 },
+                { name: 'JavaScript', value: 90 },
+                { name: 'React/Vue', value: 88 },
+                { name: '响应式布局', value: 92 },
+                { name: '动效/可视化', value: 85 }
+            ],
+            projects: [
+                { name: '实验室官网',  desc: '响应式品牌站点，含招新报名系统' },
+                { name: '数据可视化大屏', desc: '基于 ECharts + WebSocket 的实时监控面板' },
+                { name: '后台管理系统', desc: 'React + Ant Design Pro 中后台解决方案' }
+            ]
+        },
+        backend: {
+            tag: 'BACKEND',
+            code: '// 0x02',
+            title: '后台组',
+            subtitle: 'Backend & Infrastructure Group',
+            statusText: 'GROUP_DETAIL // BACKEND_MODULE_LOADED',
+            desc: '后台组承担实验室所有服务端开发与基础架构工作，负责设计高可用、高并发的服务架构，处理数据库设计与性能优化。我们关注代码可维护性、服务稳定性，并实践 DevOps 全流程。',
+            techStack: ['Java', 'Spring Boot', 'Node.js', 'Python', 'MySQL', 'Redis', 'Docker', 'Kubernetes', 'Nginx', 'Linux'],
+            skills: [
+                { name: '服务端开发', value: 90 },
+                { name: '数据库设计', value: 88 },
+                { name: '系统架构',   value: 85 },
+                { name: 'Docker/K8s', value: 82 },
+                { name: '性能优化',   value: 86 }
+            ],
+            projects: [
+                { name: '统一鉴权服务', desc: 'JWT + OAuth2 的多端 SSO 单点登录' },
+                { name: '分布式任务调度', desc: '基于 Redis + Quartz 的集群任务系统' },
+                { name: '对象存储服务', desc: 'MinIO 二次封装，支持分片上传' }
+            ]
+        },
+        multimedia: {
+            tag: 'MULTIMEDIA',
+            code: '// 0x03',
+            title: '多媒体组',
+            subtitle: 'Multimedia & Motion Design Group',
+            statusText: 'GROUP_DETAIL // MULTIMEDIA_MODULE_LOADED',
+            desc: '多媒体组负责实验室所有视频内容的策划、拍摄与后期制作，涵盖宣传短片、活动纪录、产品演示与课程教程。我们擅长用镜头语言讲好实验室的故事，并融合动效设计提升视觉表现力。',
+            techStack: ['Premiere Pro', 'After Effects', 'DaVinci', 'Cinema 4D', 'Photoshop', 'Illustrator', 'Audition', 'OBS'],
+            skills: [
+                { name: '视频剪辑',   value: 92 },
+                { name: '动效制作',   value: 85 },
+                { name: '调色',       value: 80 },
+                { name: '三维动画',   value: 75 },
+                { name: '音频处理',   value: 78 }
+            ],
+            projects: [
+                { name: '实验室招新片', desc: '年度招新宣传片，含航拍与动效包装' },
+                { name: '活动回顾视频', desc: '重大活动现场纪录与快剪输出' },
+                { name: '产品演示视频', desc: '配合研发组输出软件功能演示动画' }
+            ]
+        },
+        graphic: {
+            tag: 'GRAPHIC',
+            code: '// 0x04',
+            title: '平面设计组',
+            subtitle: 'Graphic & Visual Design Group',
+            statusText: 'GROUP_DETAIL // GRAPHIC_MODULE_LOADED',
+            desc: '平面设计组负责实验室全部视觉物料的设计工作，从品牌 Logo、海报、易拉宝，到 UI 界面、图标、字体设计。我们建立了实验室统一的视觉规范，并用设计驱动品牌价值的传播。',
+            techStack: ['Photoshop', 'Illustrator', 'Figma', 'Sketch', 'CorelDRAW', 'InDesign', 'After Effects'],
+            skills: [
+                { name: '品牌设计',   value: 90 },
+                { name: '海报/物料',  value: 92 },
+                { name: 'UI 设计',   value: 88 },
+                { name: '插画/图标', value: 85 },
+                { name: '排版',       value: 90 }
+            ],
+            projects: [
+                { name: '实验室VI手册', desc: 'Logo + 字体 + 配色 + 应用规范的完整品牌系统' },
+                { name: '招新物料包', desc: '海报、易拉宝、传单、社交媒体封面统一输出' },
+                { name: '产品 UI Kit', desc: '设计系统组件库，支撑前后端快速开发' }
+            ]
+        },
+        '3d': {
+            tag: '3D MODELING',
+            code: '// 0x05',
+            title: '3D建模组',
+            subtitle: '3D Modeling & Scene Design Group',
+            statusText: 'GROUP_DETAIL // 3D_MODEL_MODULE_LOADED',
+            desc: '3D 建模组专注于三维建模、材质贴图、灯光渲染与场景设计。我们用三维内容赋能游戏、虚拟展厅、产品演示、影视片头等多个方向，并积极探索实时渲染与元宇宙相关技术。',
+            techStack: ['Blender', 'Maya', '3ds Max', 'ZBrush', 'Substance Painter', 'Unreal Engine', 'Unity', 'Houdini'],
+            skills: [
+                { name: '多边形建模', value: 90 },
+                { name: '材质贴图',   value: 85 },
+                { name: '灯光渲染',   value: 82 },
+                { name: '数字雕刻',   value: 78 },
+                { name: '实时渲染',   value: 80 }
+            ],
+            projects: [
+                { name: '虚拟实验室展厅', desc: '基于 Unreal Engine 的沉浸式线上展厅' },
+                { name: '产品三维演示', desc: '可旋转、可拆解的产品 3D 交互演示' },
+                { name: '影视片头动画', desc: '为多媒体组视频提供三维片头与转场' }
+            ]
+        }
+    };
+
+    /* ==========================================================
+       状态机
+       ========================================================== */
+    let activeCard = null;
+    let isAnimating = false;
+
+    /* ==========================================================
+       填充详情数据
+       ========================================================== */
+    function fillDetail(data) {
+        if (!data) return;
+        tagEl.textContent      = data.tag;
+        codeEl.textContent     = data.code;
+        titleEl.textContent    = data.title;
+        subtitleEl.textContent = data.subtitle;
+        descEl.textContent     = data.desc;
+        dsbText.textContent    = data.statusText;
+
+        // 技术栈
+        techGridEl.innerHTML = '';
+        data.techStack.forEach((tech, i) => {
+            const el = document.createElement('div');
+            el.className = 'tech-pill';
+            el.textContent = tech;
+            el.style.animation = `techPillIn 0.4s cubic-bezier(0.16,1,0.3,1) ${0.6 + i * 0.04}s both`;
+            techGridEl.appendChild(el);
+        });
+
+        // 技能进度条（先清零，再加 fill）
+        skillsEl.innerHTML = '';
+        data.skills.forEach((s, i) => {
+            const item = document.createElement('div');
+            item.className = 'skill-item';
+            item.innerHTML = `
+                <span class="skill-name">${s.name}</span>
+                <div class="skill-bar"><div class="skill-fill" data-target="${s.value}"></div></div>
+                <span class="skill-value">${s.value}%</span>
+            `;
+            skillsEl.appendChild(item);
+            // 触发延迟填充
+            requestAnimationFrame(() => {
+                setTimeout(() => {
+                    const fill = item.querySelector('.skill-fill');
+                    fill.style.width = s.value + '%';
+                }, 700 + i * 100);
+            });
+        });
+
+        // 项目卡片
+        projectsEl.innerHTML = '';
+        data.projects.forEach((p, i) => {
+            const el = document.createElement('div');
+            el.className = 'project-card';
+            el.innerHTML = `
+                <div class="project-name">${p.name}</div>
+                <div class="project-desc">${p.desc}</div>
+            `;
+            el.style.animation = `projectCardIn 0.5s cubic-bezier(0.16,1,0.3,1) ${0.85 + i * 0.08}s both`;
+            projectsEl.appendChild(el);
+        });
+    }
+
+    /* ==========================================================
+       打开详情 - 触发4阶段过渡动画
+       ========================================================== */
+    function openDetail(group, card) {
+        if (isAnimating || overlay.classList.contains('active')) return;
+        const data = GROUP_DATA[group];
+        if (!data) return;
+
+        isAnimating = true;
+        activeCard = card;
+
+        // 1) 填充数据
+        fillDetail(data);
+
+        // 2) 原卡片"被吸入"
+        if (card) {
+            card.classList.add('card-zoom-in');
+        }
+
+        // 3) 显示 overlay
+        overlay.classList.add('active');
+        overlay.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+
+        // 4) 触发扫描线动画（重置 + 重播）
+        scanLine.classList.remove('scanning');
+        // 强制 reflow，保证重置生效
+        void scanLine.offsetWidth;
+        scanLine.classList.add('scanning');
+
+        // 5) 动画结束后释放锁
+        setTimeout(() => {
+            isAnimating = false;
+        }, 1300);
+    }
+
+    /* ==========================================================
+       关闭详情 - 反向动画
+       ========================================================== */
+    function closeDetail() {
+        if (isAnimating || !overlay.classList.contains('active')) return;
+        isAnimating = true;
+
+        // 1) 详情面板淡出
+        panel.style.transitionDelay = '0s';
+        overlay.classList.remove('active');
+
+        // 2) 反向扫描线
+        scanLine.classList.remove('scanning');
+        void scanLine.offsetWidth;
+        scanLineRev.classList.add('scanning');
+
+        // 3) 等 700ms 后清理
+        setTimeout(() => {
+            overlay.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = '';
+            scanLineRev.classList.remove('scanning');
+            if (activeCard) {
+                activeCard.classList.remove('card-zoom-in');
+                activeCard = null;
+            }
+            // 重置进度条填充，方便下次重新触发
+            skillsEl.querySelectorAll('.skill-fill').forEach(f => {
+                f.style.width = '0';
+            });
+            isAnimating = false;
+        }, 750);
+    }
+
+    /* ==========================================================
+       事件绑定
+       ========================================================== */
+    items.forEach(item => {
+        const group = item.dataset.group;
+        // 点击
+        item.addEventListener('click', (e) => {
+            // 避免子元素（如 link）的冒泡触发
+            if (e.target.closest('a, button')) return;
+            openDetail(group, item);
+        });
+        // 键盘可访问
+        item.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                openDetail(group, item);
+            }
+        });
+    });
+
+    // 关闭：按钮 / 背景 / Esc
+    closeBtn.addEventListener('click', closeDetail);
+    closeBtn.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            closeDetail();
+        }
+    });
+    backdrop.addEventListener('click', closeDetail);
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && overlay.classList.contains('active')) {
+            closeDetail();
+        }
+    });
+
+    // 暴露给全局调试（可选）
+    window.__groupDetail = { open: openDetail, close: closeDetail, data: GROUP_DATA };
+})();
+
+/* 动态注入 tech-pill / project-card 的入场关键帧 */
+(function injectDetailKeyframes() {
+    const css = `
+@keyframes techPillIn {
+    0%   { opacity: 0; transform: translateY(10px) scale(0.9); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes projectCardIn {
+    0%   { opacity: 0; transform: translateX(-12px); }
+    100% { opacity: 1; transform: translateX(0); }
+}
+`;
+    const style = document.createElement('style');
+    style.textContent = css;
+    document.head.appendChild(style);
+})();
+

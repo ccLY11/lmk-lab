@@ -1,0 +1,59 @@
+/* 详情面板深色主题覆盖样式 */
+.detail-desc-wrap {
+    background: linear-gradient(180deg, rgba(20,40,75,0.92), rgba(10,22,45,0.96)) !important;
+    border: 1px solid rgba(59,130,246,0.25) !important;
+    border-left: 3px solid rgba(96,165,250,0.9) !important;
+    border-radius: 6px !important;
+}
+.detail-desc {
+    color: rgba(210,222,240,0.95) !important;
+    text-shadow: 0 0 2px rgba(0,0,0,0.3);
+}
+.tech-pill {
+    background: linear-gradient(135deg, rgba(22,45,90,0.92), rgba(10,22,45,0.97)) !important;
+    border: 1px solid rgba(59,130,246,0.35) !important;
+    border-radius: 5px !important;
+    color: #c7dbfb !important;
+    box-shadow: inset 0 1px 0 rgba(147,197,253,0.08);
+}
+.skill-name {
+    color: #d0daea !important;
+    text-shadow: 0 0 2px rgba(0,0,0,0.5);
+}
+.skill-bar {
+    height: 8px !important;
+    background: linear-gradient(180deg, #0a1428, #060c18) !important;
+    border-radius: 4px !important;
+    border: 1px solid rgba(59,130,246,0.3) !important;
+    box-shadow: inset 0 2px 6px rgba(0,0,0,0.6);
+}
+.skill-fill {
+    border-radius: 4px !important;
+    box-shadow: 0 0 10px rgba(96,165,250,0.6) !important;
+}
+.skill-value {
+    color: #7db8fa !important;
+    text-shadow: 0 0 4px rgba(59,130,246,0.5);
+}
+.project-card {
+    background: linear-gradient(180deg, rgba(16,32,64,0.92), rgba(8,18,38,0.97)) !important;
+    border: 1px solid rgba(59,130,246,0.25) !important;
+    border-radius: 6px !important;
+    box-shadow: inset 0 1px 0 rgba(147,197,253,0.05);
+}
+.project-desc {
+    color: rgba(180,195,220,0.88) !important;
+    text-shadow: 0 0 2px rgba(0,0,0,0.3);
+}
+.detail-panel {
+    background: linear-gradient(180deg, rgba(13,26,51,0.98) 0%, rgba(9,20,41,0.99) 100%) !important;
+}
+.detail-content {
+    background: transparent !important;
+}
+.detail-header {
+    background: transparent !important;
+}
+.detail-section {
+    background: transparent !important;
+}

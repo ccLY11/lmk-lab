@@ -871,3 +871,291 @@ ul { list-style: none; }
     .toolbar { flex-direction: column; align-items: stretch; }
     .search-box { max-width: none; }
 }
+
+/* ===== 短信通知模块 ===== */
+.sms-status-row {
+    padding: 0 12px 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.sms-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 10px;
+    font-size: 12px;
+    border-radius: 12px;
+    font-weight: 500;
+}
+.sms-status::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: currentColor;
+}
+.sms-status.sms-off {
+    background: #e5e7eb;
+    color: #6b7280;
+}
+.sms-status.sms-on {
+    background: #ecfdf5;
+    color: var(--success);
+}
+.sms-status.sms-warn {
+    background: var(--warning-bg);
+    color: var(--warning);
+}
+
+/* 通用弹窗 */
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 20, 40, 0.55);
+    z-index: 300;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    backdrop-filter: blur(4px);
+    animation: fadeIn 0.18s ease;
+}
+.modal-backdrop[hidden] {
+    display: none !important;
+}
+@keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
+.modal {
+    background: var(--surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    width: 100%;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: popIn 0.2s cubic-bezier(0.4, 1.6, 0.6, 1);
+}
+@keyframes popIn {
+    from { opacity: 0; transform: scale(0.94) translateY(6px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+.sms-modal { max-width: 620px; }
+.sms-preview-modal { max-width: 540px; }
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border);
+}
+.modal-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text);
+}
+.modal-close {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    font-size: 22px;
+    line-height: 1;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+}
+.modal-close:hover { background: var(--bg); color: var(--text); }
+.modal-body {
+    padding: 20px 24px;
+    overflow-y: auto;
+    flex: 1;
+}
+.modal-footer {
+    padding: 14px 24px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    background: var(--bg);
+}
+
+/* SMS 表单样式（带 sms- 前缀，避免与主页面表单冲突） */
+.sms-group {
+    margin-top: 22px;
+    padding: 16px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+}
+.sms-group:first-child { margin-top: 12px; }
+.sms-group-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.sms-preset-btn {
+    font-size: 12px;
+    font-weight: 500;
+    padding: 4px 12px;
+    border: 1px solid var(--accent);
+    border-radius: 6px;
+    background: var(--accent-bg);
+    color: var(--accent);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.sms-preset-btn:hover {
+    background: var(--accent);
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+.sms-preset-btn.aliyun {
+    border-color: #ff6a00;
+    background: #fff5eb;
+    color: #ff6a00;
+}
+
+.sms-preset-btn.aliyun:hover {
+    background: #ff6a00;
+    color: #fff;
+}
+
+.sms-preset-group {
+    display: flex;
+    gap: 8px;
+}
+.sms-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+.sms-row:last-child { margin-bottom: 0; }
+.sms-label {
+    flex: 0 0 130px;
+    padding-top: 7px;
+    font-size: 13px;
+    color: var(--text-regular);
+    line-height: 1.4;
+}
+.sms-input {
+    flex: 1;
+    min-width: 0;
+    padding: 7px 10px;
+    font-size: 13px;
+    font-family: inherit;
+    color: var(--text);
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+.sms-input:focus {
+    border-color: var(--accent-light);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+.sms-textarea {
+    resize: vertical;
+    min-height: 64px;
+    line-height: 1.6;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+}
+.sms-hint {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    padding: 0 2px;
+}
+.sms-hint code {
+    padding: 1px 6px;
+    background: #eef2ff;
+    color: #4f46e5;
+    border-radius: 4px;
+    font-size: 12px;
+    font-family: var(--font-mono);
+}
+
+/* SMS 开关 */
+.sms-switch { padding-top: 5px; }
+.sms-switch input[type=checkbox] { display: none; }
+.sms-switch-track {
+    position: relative;
+    display: inline-block;
+    width: 42px;
+    height: 22px;
+    background: #d1d5db;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.sms-switch-track::before {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 16px;
+    height: 16px;
+    background: #fff;
+    border-radius: 50%;
+    transition: transform 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+.sms-switch input[type=checkbox]:checked + .sms-switch-track { background: var(--success); }
+.sms-switch input[type=checkbox]:checked + .sms-switch-track::before { transform: translateX(20px); }
+
+/* 短信预览 */
+.sms-preview-box {
+    background: linear-gradient(135deg, #eff6ff 0%, #f5f3ff 100%);
+    border: 1px solid #dbeafe;
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    margin-bottom: 14px;
+}
+.sms-preview-row {
+    display: flex;
+    font-size: 13px;
+    padding: 3px 0;
+    color: var(--text-regular);
+}
+.sms-preview-row > span:first-child {
+    flex: 0 0 64px;
+    color: var(--text-muted);
+}
+.sms-pv-phone { font-family: var(--font-mono); color: var(--accent); font-weight: 500; }
+.sms-preview-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+}
+.sms-preview-content {
+    background: #0f1e3a;
+    color: #f3f4f6;
+    padding: 14px 16px;
+    border-radius: 0 var(--radius-sm) var(--radius-sm) var(--radius-sm);
+    line-height: 1.75;
+    font-size: 13px;
+    white-space: pre-wrap;
+    word-break: break-word;
+    position: relative;
+}
+.sms-preview-content::before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: 0;
+    width: 0; height: 0;
+    border-left: 0 solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 6px solid #0f1e3a;
+}

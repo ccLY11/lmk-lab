@@ -22,8 +22,352 @@
     let offlineMode = false; // 离线回退模式（仅读 localStorage）
     let dbMigrated = false;
 
-    // ===== 初始化元素 =====
+    // ===== DOM 工具（必须在模块之前定义） =====
     const $ = id => document.getElementById(id);
+
+    // ===== 短信通知模块 =====
+    const SMS_CFG_KEY = 'lmk_sms_config_v1';
+    const DEFAULT_SMS_CONFIG = {
+        enabled: false,
+        method: 'POST_FORM',       // POST / POST_FORM / GET
+        url: '',                   // https://api.example.com/sms/send
+        phoneKey: 'mobile',        // 手机号字段名
+        contentKey: 'content',     // 内容字段名
+        headers: '',               // JSON: {"Authorization":"Bearer xxx"}
+        extraBody: '',             // JSON: {"appKey":"xxx","templateId":"SMS_123456"}
+        proxy: '',                 // CORS 代理前缀，如 https://cors-anywhere.herokuapp.com/
+        tplApproved: '【LMK实验室】{name}同学，恭喜你通过{group}组初审，请于本周六下午2点（{date}）准时到信息工程学院302会议室参加面试。如有问题请直接回复本号码联系我们。',
+        tplRejected: '【LMK实验室】{name}同学，感谢你申请{group}组。由于本届申请人数较多，我们综合评估后暂无法接纳你加入本期实验室。请不要灰心，实验室每年春季都会开放补录，欢迎你届时再次申请，也祝你在技术道路上不断进步！',
+        preview: true              // 发送前预览确认
+    };
+
+    // 阿里云预设配置（需要中转接口，浏览器无法直接调用阿里云API）
+    const ALIYUN_PRESET = {
+        method: 'POST',
+        url: 'https://你的中转接口地址/api/sms',
+        phoneKey: 'phone',
+        contentKey: 'content',
+        headers: '{"Content-Type":"application/json"}',
+        extraBody: '{"accessKeyId":"你的AccessKeyId","accessKeySecret":"你的AccessKeySecret","signName":"LMK实验室","templateCode":"SMS_XXXXXX"}',
+        proxy: ''
+    };
+
+    let smsConfig = loadSmsConfig();
+    let pendingSms = null;        // { item, status, content, phone }
+
+    function loadSmsConfig() {
+        try {
+            const raw = localStorage.getItem(SMS_CFG_KEY);
+            if (raw) return Object.assign({}, DEFAULT_SMS_CONFIG, JSON.parse(raw));
+        } catch {}
+        return Object.assign({}, DEFAULT_SMS_CONFIG);
+    }
+    function saveSmsConfig(cfg) {
+        smsConfig = cfg;
+        try { localStorage.setItem(SMS_CFG_KEY, JSON.stringify(cfg)); } catch {}
+        updateSmsStatusBadge();
+    }
+    function updateSmsStatusBadge() {
+        const el = $('smsStatusBadge');
+        if (!el) return;
+        el.classList.remove('sms-on', 'sms-off', 'sms-warn');
+        if (!smsConfig.enabled) {
+            el.classList.add('sms-off');
+            el.textContent = '未启用';
+        } else if (!smsConfig.url || !smsConfig.phoneKey || !smsConfig.contentKey) {
+            el.classList.add('sms-warn');
+            el.textContent = '配置不完整';
+        } else {
+            el.classList.add('sms-on');
+            el.textContent = '已启用';
+        }
+    }
+    function tryParseJson(s) {
+        if (!s) return null;
+        if (typeof s !== 'string') return s;
+        const t = s.trim();
+        if (!t) return null;
+        try { return JSON.parse(t); } catch (e) { return 'PARSE_ERROR:' + e.message; }
+    }
+    function isValidPhone(phone) {
+        return /^1[3-9]\d{9}$/.test(String(phone || '').trim());
+    }
+    function renderTemplate(tpl, item) {
+        const d = new Date();
+        const p = n => String(n).padStart(2, '0');
+        const today = `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`;
+        return String(tpl || '')
+            .replace(/\{name\}/g, item.name || '同学')
+            .replace(/\{group\}/g, item.direction || '实验室')
+            .replace(/\{date\}/g, today);
+    }
+    async function sendSmsApi(phone, content) {
+        if (!smsConfig.enabled) return { ok: true, simulated: true, msg: '未启用API，模拟发送完成' };
+        if (!smsConfig.url) return { ok: false, msg: '未配置短信 API 地址' };
+        if (!smsConfig.phoneKey || !smsConfig.contentKey) return { ok: false, msg: '手机号/内容字段名未配置' };
+
+        const headersObj = tryParseJson(smsConfig.headers);
+        if (typeof headersObj === 'string' && headersObj.startsWith('PARSE_ERROR:')) {
+            return { ok: false, msg: '请求头 JSON 错误：' + headersObj };
+        }
+        const extraObj = tryParseJson(smsConfig.extraBody);
+        if (typeof extraObj === 'string' && extraObj.startsWith('PARSE_ERROR:')) {
+            return { ok: false, msg: '额外 Body JSON 错误：' + extraObj };
+        }
+
+        let url = smsConfig.url;
+        let init = { method: smsConfig.method === 'GET' ? 'GET' : 'POST' };
+        init.headers = Object.assign({}, headersObj || {});
+
+        // CORS 代理：如果配置了代理，将代理前缀拼接到 URL 前
+        const proxy = (smsConfig.proxy || '').trim();
+        if (proxy) {
+            url = proxy + encodeURIComponent(url);
+        }
+
+        const data = Object.assign({}, extraObj || {});
+        data[smsConfig.phoneKey] = phone;
+        data[smsConfig.contentKey] = content;
+
+        try {
+            if (smsConfig.method === 'GET') {
+                const qs = new URLSearchParams();
+                Object.keys(data).forEach(k => qs.append(k, data[k]));
+                url += (url.indexOf('?') >= 0 ? '&' : '?') + qs.toString();
+            } else if (smsConfig.method === 'POST_FORM') {
+                const fd = new URLSearchParams();
+                Object.keys(data).forEach(k => fd.append(k, data[k]));
+                init.body = fd.toString();
+                if (!init.headers['Content-Type']) init.headers['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8';
+            } else {
+                init.body = JSON.stringify(data);
+                if (!init.headers['Content-Type']) init.headers['Content-Type'] = 'application/json';
+            }
+            const res = await safeFetch(url, init, 12000);
+            let body = '';
+            try { body = await res.text(); } catch {}
+            if (!res.ok) return { ok: false, msg: 'HTTP ' + res.status + '，响应：' + body.slice(0, 180) };
+            return { ok: true, msg: 'API 返回 HTTP 2xx', raw: body.slice(0, 200) };
+        } catch (e) {
+            return { ok: false, msg: '请求失败：' + (e.message || String(e)) };
+        }
+    }
+    async function performSmsIfNeeded(item, nextStatus) {
+        // 只有 processed=同意 / rejected=拒绝 真正触发
+        if (nextStatus !== 'processed' && nextStatus !== 'rejected') return { ok: true, skipped: true };
+        if (!item.phone) return { ok: false, skipped: true, msg: '申请人未填写手机号，已跳过短信' };
+
+        const tpl = nextStatus === 'processed' ? smsConfig.tplApproved : smsConfig.tplRejected;
+        const content = renderTemplate(tpl, item);
+        const phone = String(item.phone).trim();
+
+        const trigger = () => sendSmsApi(phone, content);
+
+        if (!smsConfig.preview || !smsConfig.enabled) {
+            // 不预览：直接走
+            const r = await trigger();
+            return { ok: r.ok, simulated: r.simulated, msg: r.msg };
+        }
+        // 进入预览模态
+        return new Promise(resolve => {
+            pendingSms = { item, status: nextStatus, content, phone, resolve };
+            showSmsPreview(item, nextStatus, phone, content);
+        });
+    }
+    function showSmsPreview(item, status, phone, content) {
+        try {
+            const modal = $('smsPreviewModal');
+            if (!modal) { console.error('[SMS] smsPreviewModal 未找到'); return; }
+            const pvPhone = $('pvPhone'); if (pvPhone) pvPhone.textContent = phone;
+            const pvName = $('pvName'); if (pvName) pvName.textContent = item?.name || '-';
+            const pvGroup = $('pvGroup'); if (pvGroup) pvGroup.textContent = item?.direction || '-';
+            const actBadge = $('pvAction');
+            if (actBadge) {
+                if (status === 'processed') { actBadge.textContent = '同意申请（面试通知）'; actBadge.style.color = 'var(--success)'; }
+                else { actBadge.textContent = '婉拒申请'; actBadge.style.color = 'var(--warning)'; }
+            }
+            const pvContent = $('pvContent'); if (pvContent) pvContent.textContent = content;
+            const note = $('pvNote');
+            if (note) {
+                if (!smsConfig.enabled) {
+                    note.textContent = '⚠ 当前短信通知未启用。点击「确认发送」仅会在本地模拟，不会真正调 API。启用请到「⚙ 短信通知设置」。';
+                    note.style.color = 'var(--warning)';
+                } else if (!isValidPhone(phone)) {
+                    note.textContent = '⚠ 该手机号 ' + phone + ' 不符合中国大陆 11 位格式，可能无法送达。';
+                    note.style.color = 'var(--danger)';
+                } else {
+                    note.textContent = '✅ 手机号格式校验通过，点击「确认发送」后将调用你配置的短信 API。';
+                    note.style.color = 'var(--success)';
+                }
+            }
+            modal.hidden = false;
+        } catch (e) {
+            console.error('[SMS] showSmsPreview 出错:', e);
+        }
+    }
+    function closeSmsPreview() {
+        const m = $('smsPreviewModal'); if (m) m.hidden = true;
+        if (pendingSms) { pendingSms.resolve({ ok: false, cancelled: true }); pendingSms = null; }
+    }
+    async function confirmSmsSend() {
+        if (!pendingSms) { closeSmsPreview(); return; }
+        const ctx = pendingSms; pendingSms = null;
+        const m = $('smsPreviewModal'); if (m) m.hidden = true;
+        // 执行实际发送
+        const r = await sendSmsApi(ctx.phone, ctx.content);
+        ctx.resolve({ ok: r.ok, simulated: r.simulated, msg: r.msg });
+    }
+
+    // 设置弹窗交互
+    function openSmsSettings() {
+        try {
+            const m = $('smsModal'); if (!m) { console.error('[SMS] smsModal 未找到'); return; }
+            const set = (id, val) => { const el = $(id); if (el) el.value = val ?? ''; };
+            const setChecked = (id, val) => { const el = $(id); if (el) el.checked = !!val; };
+            setChecked('smsEnabled', smsConfig.enabled);
+            set('smsMethod', smsConfig.method || 'POST_FORM');
+            set('smsUrl', smsConfig.url || '');
+            set('smsPhoneKey', smsConfig.phoneKey || '');
+            set('smsContentKey', smsConfig.contentKey || '');
+            set('smsHeaders', smsConfig.headers || '');
+            set('smsExtraBody', smsConfig.extraBody || '');
+            set('smsProxy', smsConfig.proxy || '');
+            set('smsTplApproved', smsConfig.tplApproved || '');
+            set('smsTplRejected', smsConfig.tplRejected || '');
+            setChecked('smsPreview', !!smsConfig.preview);
+            m.hidden = false;
+        } catch (e) { console.error('[SMS] openSmsSettings 出错:', e); }
+    }
+    function closeSmsSettings() { const m = $('smsModal'); if (m) m.hidden = true; }
+    function readFormIntoCfg() {
+        return {
+            enabled: !!$('smsEnabled').checked,
+            method: $('smsMethod').value || 'POST_FORM',
+            url: $('smsUrl').value.trim(),
+            phoneKey: $('smsPhoneKey').value.trim(),
+            contentKey: $('smsContentKey').value.trim(),
+            headers: $('smsHeaders').value.trim(),
+            extraBody: $('smsExtraBody').value.trim(),
+            proxy: $('smsProxy').value.trim(),
+            tplApproved: $('smsTplApproved').value,
+            tplRejected: $('smsTplRejected').value,
+            preview: !!$('smsPreview').checked
+        };
+    }
+
+    // 阿里云一键配置
+    function applyAliyunPreset() {
+        try {
+            const set = (id, val) => { const el = $(id); if (el) el.value = val ?? ''; };
+            set('smsMethod', ALIYUN_PRESET.method);
+            set('smsUrl', ALIYUN_PRESET.url);
+            set('smsPhoneKey', ALIYUN_PRESET.phoneKey);
+            set('smsContentKey', ALIYUN_PRESET.contentKey);
+            set('smsHeaders', ALIYUN_PRESET.headers);
+            set('smsExtraBody', ALIYUN_PRESET.extraBody);
+            set('smsProxy', ALIYUN_PRESET.proxy);
+            toast('warning', '阿里云配置已填入', '阿里云API无法直接浏览器调用，需部署中转接口（见文档），请替换URL和凭证后保存');
+        } catch (e) { console.error('[SMS] applyAliyunPreset 出错:', e); }
+    }
+
+    function initSmsUiOnce() {
+        try {
+            updateSmsStatusBadge();
+            const setBtn = $('smsSettingsBtn'); if (setBtn) setBtn.onclick = openSmsSettings;
+            const c1 = $('smsModalClose'), c2 = $('smsModal');
+            if (c1) c1.onclick = closeSmsSettings;
+            if (c2) c2.onclick = e => { if (e.target.id === 'smsModal') closeSmsSettings(); };
+            const saveBtn = $('smsSave');
+            if (saveBtn) saveBtn.onclick = () => {
+                try {
+                    const cfg = readFormIntoCfg();
+                    const heads = tryParseJson(cfg.headers);
+                    if (cfg.headers && typeof heads === 'string' && heads.startsWith('PARSE_ERROR:')) { alert('请求头 JSON 解析失败：' + heads); return; }
+                    const extra = tryParseJson(cfg.extraBody);
+                    if (cfg.extraBody && typeof extra === 'string' && extra.startsWith('PARSE_ERROR:')) { alert('额外 Body JSON 解析失败：' + extra); return; }
+                    saveSmsConfig(cfg);
+                    closeSmsSettings();
+                    toast('success', '短信设置已保存', cfg.enabled ? '同意/拒绝申请时将按配置发送短信' : '已关闭短信，同意/拒绝时仅本地预览');
+                } catch (e) { console.error('[SMS] 保存设置出错:', e); alert('保存出错：' + e.message); }
+            };
+            const rst = $('smsReset');
+            if (rst) rst.onclick = () => {
+                if (!customConfirm('恢复默认短信模板和配置？\n（保留当前启用开关、API地址和代理）')) return;
+                const kept = { enabled: smsConfig.enabled, url: smsConfig.url, phoneKey: smsConfig.phoneKey, contentKey: smsConfig.contentKey, proxy: smsConfig.proxy };
+                const def = Object.assign({}, DEFAULT_SMS_CONFIG, kept);
+                saveSmsConfig(def);
+                openSmsSettings();
+                toast('info', '已恢复默认', '模板已重置，记得点「保存设置」喔');
+            };
+            const aliyunBtn = $('smsAliyunPreset');
+            if (aliyunBtn) aliyunBtn.onclick = applyAliyunPreset;
+            const pvClose = $('smsPreviewClose'), pvCancel = $('pvCancel'), pvBg = $('smsPreviewModal');
+            if (pvClose) pvClose.onclick = closeSmsPreview;
+            if (pvCancel) pvCancel.onclick = closeSmsPreview;
+            if (pvBg) pvBg.onclick = e => { if (e.target.id === 'smsPreviewModal') closeSmsPreview(); };
+            const pvOk = $('pvConfirm');
+            if (pvOk) pvOk.onclick = confirmSmsSend;
+
+            const testBtn = $('smsTestBtn');
+            if (testBtn) testBtn.onclick = async () => {
+                try {
+                    const phone = await customPrompt('发送测试短信', '请输入要接收测试短信的手机号（11位）：', '例如：13800138000');
+                    if (!phone) return;
+                    if (!isValidPhone(phone)) { toast('warning', '手机号格式错误', '请输入 11 位中国大陆手机号'); return; }
+                    const mockItem = { name: '测试同学', direction: '前端组' };
+                    const content = renderTemplate(smsConfig.tplApproved, mockItem);
+                    toast('info', '正在发送测试短信', '目标号码：' + phone);
+                    const r = await sendSmsApi(phone, content);
+                    if (r.ok) toast(r.simulated ? 'warning' : 'success', r.simulated ? '模拟发送成功（未启用API）' : '测试短信已发出', r.msg || '');
+                    else toast('error', '测试短信发送失败', r.msg || '');
+                } catch (e) { console.error('[SMS] 测试发送出错:', e); toast('error', '测试出错', e.message); }
+            };
+        } catch (e) {
+            console.error('[SMS] initSmsUiOnce 出错:', e);
+        }
+    }
+
+    // ===== 自定义 prompt 替代（兼容不支持原生 prompt 的浏览器环境） =====
+    function customPrompt(title, label, placeholder) {
+        return new Promise(resolve => {
+            const modal = $('promptModal');
+            if (!modal) { resolve(null); return; }
+            $('promptTitle').textContent = title || '提示';
+            $('promptLabel').textContent = label || '';
+            const input = $('promptInput');
+            input.value = '';
+            input.placeholder = placeholder || '';
+            input.focus();
+
+            const cleanup = () => {
+                modal.hidden = true;
+                $('promptOk').onclick = null;
+                $('promptCancel').onclick = null;
+                $('promptClose').onclick = null;
+                input.onkeydown = null;
+                modal.onclick = null;
+            };
+            const ok = () => { const v = input.value.trim(); cleanup(); resolve(v || null); };
+            const cancel = () => { cleanup(); resolve(null); };
+
+            $('promptOk').onclick = ok;
+            $('promptCancel').onclick = cancel;
+            $('promptClose').onclick = cancel;
+            input.onkeydown = e => { if (e.key === 'Enter') ok(); if (e.key === 'Escape') cancel(); };
+            modal.onclick = e => { if (e.target.id === 'promptModal') cancel(); };
+            modal.hidden = false;
+        });
+    }
+
+    // ===== 自定义 confirm 替代 =====
+    function customConfirm(msg) {
+        return new Promise(resolve => {
+            const ok = window.confirm ? window.confirm(msg) : true;
+            resolve(ok);
+        });
+    }
+
+    // ===== 初始化元素 =====
     const frontApp = $('frontApp');
     const adminApp = $('adminApp');
     const loginScreen = $('loginScreen');
@@ -102,6 +446,7 @@
         adminMain.style.display = 'block';
         unseenNewCount = 0;
         updateNewBadge();
+        initSmsUiOnce();
         refreshData();
         updateLastUpdate();
         startRealtime();
@@ -396,13 +741,26 @@
 
             if (action === 'process') {
                 const nextStatus = item.status === 'processed' ? 'pending' : 'processed';
+                // 短信通知（仅在状态从 pending → processed 变化时触发真正的"同意"动作）
+                let smsResult = null;
+                if (item.status !== nextStatus && nextStatus === 'processed') {
+                    smsResult = await performSmsIfNeeded(item, nextStatus);
+                    if (smsResult && smsResult.cancelled) return; // 用户取消了短信发送 → 中止本次操作
+                }
                 try {
                     if (!offlineMode) await updateStatusInCloud(id, nextStatus);
                     item.status = nextStatus;
                     syncLocalFromAll();
                     refreshData(true, [id]);
                     if (currentDetailId === item.id) showDetailPanel(item);
-                    toast('success', '状态已更新', `${item.name} → ${statusText(nextStatus)}（云端已同步）`);
+                    let desc = `${item.name} → ${statusText(nextStatus)}（云端已同步）`;
+                    let toastType = 'success';
+                    if (smsResult && smsResult.msg) {
+                        desc += smsResult.simulated ? ' · 短信(模拟)' : ' · 短信已发';
+                        if (!smsResult.ok && !smsResult.simulated) toastType = 'warning';
+                    }
+                    toast(toastType, '状态已更新', desc);
+                    if (smsResult && smsResult.msg) toast(smsResult.simulated ? 'info' : (smsResult.ok ? 'success' : 'error'), smsResult.simulated ? '短信（本地模拟）' : (smsResult.ok ? '短信发送结果' : '短信发送失败'), smsResult.msg);
                 } catch (e) {
                     console.error(e);
                     // 失败时更新本地并提示
@@ -416,7 +774,7 @@
             }
 
             if (action === 'delete') {
-                if (!window.confirm(`确定要删除「${item.name}」的申请吗？`)) return;
+                if (!customConfirm(`确定要删除「${item.name}」的申请吗？`)) return;
                 try {
                     if (!offlineMode) await deleteInCloud(id);
                     allData = allData.filter(a => a.id !== id);
@@ -513,12 +871,23 @@
     }
     async function detailSetStatus(item, nextStatus) {
         try {
+            // 短信通知（仅真正的 同意/拒绝 状态变化触发；恢复pending不会发短信）
+            let smsResult = null;
+            if (item.status !== nextStatus && (nextStatus === 'processed' || nextStatus === 'rejected')) {
+                smsResult = await performSmsIfNeeded(item, nextStatus);
+                if (smsResult && smsResult.cancelled) return;
+            }
             if (!offlineMode) await updateStatusInCloud(item.id, nextStatus);
             item.status = nextStatus;
             syncLocalFromAll();
             refreshData(true, [item.id]);
             showDetailPanel(item);
             toast('success', '状态已更新', `${item.name} → ${statusText(nextStatus)}`);
+            if (smsResult && smsResult.msg) {
+                toast(smsResult.simulated ? 'info' : (smsResult.ok ? 'success' : 'error'),
+                    smsResult.simulated ? '短信（本地模拟）' : (smsResult.ok ? '短信发送结果' : '短信发送失败'),
+                    smsResult.msg);
+            }
         } catch (e) {
             console.error(e);
             item.status = nextStatus;
