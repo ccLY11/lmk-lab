@@ -680,39 +680,52 @@ ul { list-style: none; }
     color: var(--text-muted);
 }
 
-/* ===== 详情面板 ===== */
-.detail-panel {
+/* ===== 详情面板（后台申请详情，用专属类名避免与前台组别详情 .detail-panel 冲突） ===== */
+.admin-detail-panel {
     margin-top: 20px;
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius);
     overflow: hidden;
     min-height: 200px;
+    position: static;
+    top: auto;
+    width: auto;
+    max-height: none;
+    transform: none !important;
+    opacity: 1 !important;
+    filter: none !important;
+    display: block !important;
+    z-index: 1;
+    pointer-events: auto !important;
+    box-shadow: 0 6px 22px rgba(15, 23, 42, 0.08);
+    flex-direction: row;
 }
-.detail-panel-empty {
+.admin-detail-panel .detail-panel-empty {
     padding: 48px 24px;
     text-align: center;
     color: var(--text-muted);
 }
-.detail-empty-icon {
+.admin-detail-panel .detail-empty-icon {
     font-size: 36px;
     color: var(--text-muted);
     margin-bottom: 12px;
     opacity: 0.5;
 }
-.detail-empty-title {
+.admin-detail-panel .detail-empty-title {
     font-size: 14px;
     color: var(--text-secondary);
     margin-bottom: 6px;
 }
-.detail-empty-desc {
+.admin-detail-panel .detail-empty-desc {
     font-size: 12px;
     color: var(--text-muted);
 }
-.detail-panel-content {
+.admin-detail-panel .detail-panel-content {
     padding: 0;
+    display: block;
 }
-.detail-panel-head {
+.admin-detail-panel .detail-panel-head {
     padding: 18px 24px;
     border-bottom: 1px solid var(--border);
     background: linear-gradient(135deg, rgba(59,130,246,0.05), rgba(59,130,246,0));
@@ -722,67 +735,67 @@ ul { list-style: none; }
     flex-wrap: wrap;
     gap: 12px;
 }
-.detail-panel-title {
+.admin-detail-panel .detail-panel-title {
     display: flex;
     align-items: center;
     gap: 10px;
     flex-wrap: wrap;
 }
-.detail-name {
+.admin-detail-panel .detail-name {
     font-size: 18px;
     font-weight: 600;
     color: var(--text);
 }
-.detail-panel-time {
+.admin-detail-panel .detail-panel-time {
     font-size: 12px;
     color: var(--text-muted);
     font-family: var(--font-mono);
 }
-.detail-grid {
+.admin-detail-panel .detail-grid {
     padding: 18px 24px;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 16px;
     border-bottom: 1px solid var(--border);
 }
-.detail-field {
+.admin-detail-panel .detail-field {
     display: flex;
     flex-direction: column;
     gap: 4px;
 }
-.detail-field-label {
+.admin-detail-panel .detail-field-label {
     font-size: 11px;
     color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
-.detail-field-value {
+.admin-detail-panel .detail-field-value {
     font-size: 14px;
     color: var(--text);
     font-weight: 500;
 }
-.detail-section {
+.admin-detail-panel .detail-section {
     padding: 16px 24px;
     border-bottom: 1px solid var(--border);
 }
-.detail-section:last-of-type {
+.admin-detail-panel .detail-section:last-of-type {
     border-bottom: none;
 }
-.detail-section-title {
+.admin-detail-panel .detail-section-title {
     font-size: 12px;
     color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 0.5px;
     margin-bottom: 8px;
 }
-.detail-text {
+.admin-detail-panel .detail-text {
     font-size: 14px;
     color: var(--text);
     line-height: 1.6;
     white-space: pre-wrap;
     word-break: break-word;
 }
-.detail-panel-actions {
+.admin-detail-panel .detail-panel-actions {
     padding: 16px 24px;
     display: flex;
     gap: 10px;
