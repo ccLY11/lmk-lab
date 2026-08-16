@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://idkfeltsswxdlbkduhcs.supabase.co" crossorigin>
     <link rel="dns-prefetch" href="https://idkfeltsswxdlbkduhcs.supabase.co">
-    <link rel="stylesheet" href="css/style.css?v=v2025">
+    <link rel="stylesheet" href="css/style.css?v=loaderPro3">
     <link rel="stylesheet" href="css/admin.css">
     <link rel="stylesheet" href="css/detail-panel-override.css?v=v2025">
 </head>
@@ -54,26 +54,97 @@
     </script>
 
     <!-- ===== 加载动画（后台访问时隐藏）===== -->
-    <div id="loader" class="loader" style="position:fixed;top:0;left:0;right:0;bottom:0;width:100vw;height:100vh;z-index:99999;background:#0a1428;display:flex;align-items:center;justify-content:center;flex-direction:column;overflow:hidden;">
+    <div id="loader" class="loader">
+        <!-- 背景层 -->
+        <div class="loader-bg"></div>
         <div class="loader-grid"></div>
+        <div class="loader-grid loader-grid-2"></div>
+        <div class="loader-beam"></div>
+        <div class="loader-particles" aria-hidden="true">
+            <span style="--x:10%;--d:0s"></span><span style="--x:22%;--d:0.3s"></span><span style="--x:35%;--d:0.7s"></span>
+            <span style="--x:48%;--d:0.1s"></span><span style="--x:60%;--d:0.9s"></span><span style="--x:72%;--d:0.5s"></span>
+            <span style="--x:85%;--d:0.2s"></span><span style="--x:92%;--d:1.1s"></span><span style="--x:5%;--d:1.4s"></span>
+            <span style="--x:55%;--d:1.6s"></span>
+        </div>
+        <!-- 顶部 HUD -->
+        <div class="loader-hud loader-hud-top">
+            <span class="hud-cell hud-cell-blk">
+                <span class="hud-dot hud-dot-ok"></span>
+                <span class="hud-label">SYS::STATUS</span>
+                <span class="hud-value">ONLINE</span>
+            </span>
+            <span class="hud-cell hud-cell-blk">
+                <span class="hud-label">LMK-LAB</span>
+                <span class="hud-value hud-val-mono">// BOOT_SEQ_v2.026</span>
+            </span>
+            <span class="hud-cell hud-cell-blk">
+                <span class="hud-label">NODE</span>
+                <span class="hud-value hud-val-mono">LNIT-CORE-01</span>
+            </span>
+            <span class="hud-cell hud-cell-blk hud-time">
+                <span class="hud-label">UPTIME</span>
+                <span class="hud-value hud-val-mono" id="loaderUptime">00:00.00</span>
+            </span>
+        </div>
+        <!-- 底部 HUD -->
+        <div class="loader-hud loader-hud-bot">
+            <span class="hud-cell hud-cell-blk">
+                <span class="hud-label">MODULES</span>
+                <span class="hud-value hud-val-mono"><span id="loaderModCount">00</span>/06</span>
+            </span>
+            <span class="hud-cell hud-cell-blk">
+                <span class="hud-label">PING</span>
+                <span class="hud-value hud-val-mono hud-val-ok">23ms</span>
+            </span>
+            <span class="hud-cell hud-cell-blk hud-term">
+                <span class="hud-label">TERMINAL</span>
+                <span class="hud-value hud-val-mono">
+                    <span class="hud-cursor">█</span>
+                    <span class="hud-typing" id="loaderTyping">./lmk_boot.sh --init</span>
+                </span>
+            </span>
+            <span class="hud-cell hud-cell-blk">
+                <span class="hud-label">MEMORY</span>
+                <span class="hud-value hud-val-mono"><span id="loaderMem">12</span>/128MB</span>
+            </span>
+        </div>
+        <!-- 四角装饰 -->
+        <div class="loader-hud-corners" aria-hidden="true">
+            <span class="lhc lhc-tl"></span>
+            <span class="lhc lhc-tr"></span>
+            <span class="lhc lhc-bl"></span>
+            <span class="lhc lhc-br"></span>
+        </div>
+        <!-- 主内容 -->
         <div class="loader-inner">
             <div class="loader-logo-wrap">
                 <div class="loader-ring"></div>
                 <div class="loader-ring loader-ring-2"></div>
+                <div class="loader-ring loader-ring-3"></div>
+                <div class="loader-ring-dots">
+                    <span style="--a:0deg"></span><span style="--a:72deg"></span><span style="--a:144deg"></span>
+                    <span style="--a:216deg"></span><span style="--a:288deg"></span>
+                </div>
+                <div class="loader-radar-pulse"></div>
                 <div class="loader-logo">
                     <span style="--i:0">L</span><span style="--i:1">M</span><span style="--i:2">K</span>
                 </div>
             </div>
-            <div class="loader-name">LMK LABORATORY</div>
-            <div class="loader-sub">Liaoning Institute of Technology</div>
+            <div class="loader-name">LMK&nbsp;LABORATORY</div>
+            <div class="loader-sub">LIAONING INSTITUTE OF TECHNOLOGY &nbsp;·&nbsp; 辽宁理工学院 LMK 实验室</div>
             <div class="loader-progress">
-                <div class="loader-progress-bar"><div class="loader-progress-fill"></div></div>
-                <div class="loader-percent">0%</div>
+                <div class="loader-progress-bar">
+                    <div class="loader-progress-fill"></div>
+                    <div class="loader-progress-glow"></div>
+                </div>
+                <div class="loader-percent" id="loaderPercent">0%</div>
             </div>
             <div class="loader-status">
-                <span class="loader-status-text">系统初始化中</span><span class="loader-cursor">▋</span>
+                <span class="loader-status-ok">●</span>
+                <span class="loader-status-text" id="loaderStatusText">初始化内核模块...</span>
+                <span class="loader-cursor">▋</span>
             </div>
-            <div class="loader-log"></div>
+            <div class="loader-log" id="loaderLog"></div>
         </div>
     </div>
 
@@ -84,14 +155,14 @@
     <div class="top-bar">
         <div class="top-bar-inner">
             <span class="top-bar-text">LMK实验室 2026年秋季招新进行中</span>
-            <a href="#join" class="top-bar-link">立即申请 →</a>
+            <a href="?page=join" class="top-bar-link">立即申请 →</a>
         </div>
     </div>
 
     <!-- 导航栏 -->
     <header class="header" id="header">
         <div class="container nav">
-            <a href="#home" class="brand">
+            <a href="?page=index" class="brand">
                 <div class="brand-mark">LMK</div>
                 <div class="brand-text">
                     <span class="brand-name">LMK 实验室</span>
@@ -99,12 +170,13 @@
                 </div>
             </a>
             <nav class="nav-menu" id="navMenu">
-                <a href="#home" class="nav-link active">首页</a>
-                <a href="#about" class="nav-link">实验室简介</a>
-                <a href="#research" class="nav-link">研究方向</a>
-                <a href="#awards" class="nav-link">奖项成就</a>
-                <a href="#gallery" class="nav-link">实验室组别</a>
-                <a href="#join" class="nav-link">加入我们</a>
+                <a href="?page=index" class="nav-link active" data-page="index">首页</a>
+                <a href="?page=about" class="nav-link" data-page="about">实验室简介</a>
+                <a href="?page=research" class="nav-link" data-page="research">研究方向</a>
+                <a href="?page=awards" class="nav-link" data-page="awards">奖项成就</a>
+                <a href="?page=groups" class="nav-link" data-page="groups">实验室组别</a>
+                <a href="?page=teachers" class="nav-link" data-page="teachers">指导老师</a>
+                <a href="?page=join" class="nav-link" data-page="join">加入我们</a>
             </nav>
             <button class="nav-toggle" id="navToggle" aria-label="菜单">
                 <span></span><span></span><span></span>
@@ -129,8 +201,8 @@
                     培养具备工程能力与创新思维的复合型人才。
                 </p>
                 <div class="hero-actions">
-                    <a href="#about" class="btn btn-primary">了解实验室</a>
-                    <a href="#join" class="btn btn-outline">申请加入</a>
+                    <a href="?page=about" class="btn btn-primary">了解实验室</a>
+                    <a href="?page=join" class="btn btn-outline">申请加入</a>
                 </div>
             </div>
             <div class="hero-visual">
@@ -175,8 +247,97 @@
         </div>
     </section>
 
-    <!-- 实验室简介 -->
-    <section id="about" class="section">
+        <!-- ===== 多页路由容器 ===== -->
+
+    <!-- 首页：快速入口 -->
+    <section id="page-index" class="page-section section section-dark page-index-tech" data-page="index">
+        <div class="page-index-grid-bg"></div>
+        <div class="container">
+            <!-- HUD 状态栏 -->
+            <div class="hud-bar">
+                <span class="hud-item"><span class="hud-led hud-led-on"></span> SYSTEM://LMK-LAB/v2026</span>
+                <span class="hud-item">STATUS: <span class="hud-ok">ONLINE</span></span>
+                <span class="hud-item">MODULES: 06</span>
+                <span class="hud-item hud-blink">// READY</span>
+            </div>
+
+            <div class="section-head section-head-tech">
+                <span class="section-num">NAV<span class="sn-dot"></span></span>
+                <h2 class="section-title">探索 LMK 实验室</h2>
+                <p class="section-desc">Choose a Module to Explore</p>
+                <span class="section-scanline"></span>
+            </div>
+
+            <div class="quick-entry-grid">
+                <a href="?page=about" class="gallery-item spotlight-card quick-entry qe-about" data-goto="about">
+                    <span class="qe-tag">MODULE_01</span>
+                    <span class="qe-corner tl"></span><span class="qe-corner tr"></span>
+                    <span class="qe-corner bl"></span><span class="qe-corner br"></span>
+                    <div class="qe-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 21h18M4 21V10l8-6 8 6v11M9 21v-6h6v6"/></svg></div>
+                    <div class="qe-body"><h3>实验室简介</h3><p>了解LMK实验室的历史、宗旨、文化与基本信息</p></div>
+                    <div class="qe-arrow">→</div>
+                    <div class="gallery-image-overlay"></div>
+                </a>
+                <a href="?page=research" class="gallery-item spotlight-card quick-entry qe-research" data-goto="research">
+                    <span class="qe-tag">MODULE_02</span>
+                    <span class="qe-corner tl"></span><span class="qe-corner tr"></span>
+                    <span class="qe-corner bl"></span><span class="qe-corner br"></span>
+                    <div class="qe-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 3L5 7l4 4M15 3l4 4-4 4M14 4l-4 16"/></svg></div>
+                    <div class="qe-body"><h3>研究方向</h3><p>四大研究领域：软件开发、数字媒体、三创与AI竞赛实践</p></div>
+                    <div class="qe-arrow">→</div>
+                    <div class="gallery-image-overlay"></div>
+                </a>
+                <a href="?page=awards" class="gallery-item spotlight-card quick-entry qe-awards" data-goto="awards">
+                    <span class="qe-tag">MODULE_03</span>
+                    <span class="qe-corner tl"></span><span class="qe-corner tr"></span>
+                    <span class="qe-corner bl"></span><span class="qe-corner br"></span>
+                    <div class="qe-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="9" r="5"/><path d="M8.5 13.5L7 21l5-3 5 3-1.5-7.5M12 4V2M16 5l1.5-2M20 9l2-1M20 13l2 1M16 13l1.5 2M8 5L6.5 3M4 9l-2-1M4 13l-2 1M8 13L6.5 15"/></svg></div>
+                    <div class="qe-body"><h3>奖项成就</h3><p>国家级/省级/校级获奖成果一览</p></div>
+                    <div class="qe-arrow">→</div>
+                    <div class="gallery-image-overlay"></div>
+                </a>
+                <a href="?page=groups" class="gallery-item spotlight-card quick-entry qe-groups" data-goto="groups">
+                    <span class="qe-tag">MODULE_04</span>
+                    <span class="qe-corner tl"></span><span class="qe-corner tr"></span>
+                    <span class="qe-corner bl"></span><span class="qe-corner br"></span>
+                    <div class="qe-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></div>
+                    <div class="qe-body"><h3>实验室组别</h3><p>前端/后台/多媒体/平面设计/3D建模 五大专精小组</p></div>
+                    <div class="qe-arrow">→</div>
+                    <div class="gallery-image-overlay"></div>
+                </a>
+                <a href="?page=teachers" class="gallery-item spotlight-card quick-entry qe-teachers" data-goto="teachers">
+                    <span class="qe-tag">MODULE_05</span>
+                    <span class="qe-corner tl"></span><span class="qe-corner tr"></span>
+                    <span class="qe-corner bl"></span><span class="qe-corner br"></span>
+                    <div class="qe-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></div>
+                    <div class="qe-body"><h3>指导老师</h3><p>赵丽霞 · 张奇 等7位指导老师介绍</p></div>
+                    <div class="qe-arrow">→</div>
+                    <div class="gallery-image-overlay"></div>
+                </a>
+                <a href="?page=join" class="gallery-item spotlight-card quick-entry qe-join" data-goto="join">
+                    <span class="qe-tag">MODULE_06</span>
+                    <span class="qe-corner tl"></span><span class="qe-corner tr"></span>
+                    <span class="qe-corner bl"></span><span class="qe-corner br"></span>
+                    <div class="qe-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg></div>
+                    <div class="qe-body"><h3>加入我们</h3><p>在线申请 · 五步入组流程 · 期待你的加入</p></div>
+                    <div class="qe-arrow">→</div>
+                    <div class="gallery-image-overlay"></div>
+                </a>
+            </div>
+
+            <!-- 终端式信息条 -->
+            <div class="qe-term-line">
+                <span class="qe-prompt">➜</span>
+                <span class="qe-cmd">./lmk --enter</span>
+                <span class="qe-ok">[OK]</span>
+                <span class="qe-comment">// INDEX_LOAD_COMPLETE · 选择上方模块继续</span>
+                <span class="qe-caret"></span>
+            </div>
+        </div>
+    </section>
+
+<!-- 实验室简介 -->
+    <section id="page-about" class="page-section section" data-page="about">
         <div class="container">
             <div class="section-head">
                 <span class="section-num">01</span>
@@ -268,7 +429,7 @@
     </section>
 
     <!-- 研究方向 -->
-    <section id="research" class="section section-dark">
+    <section id="page-research" class="page-section section section-dark" data-page="research">
         <div class="container">
             <div class="section-head">
                 <span class="section-num">02</span>
@@ -325,7 +486,7 @@
     </section>
 
     <!-- 奖项成就 -->
-    <section id="awards" class="section">
+    <section id="page-awards" class="page-section section" data-page="awards">
         <div class="container">
             <div class="section-head">
                 <span class="section-num">03</span>
@@ -410,11 +571,11 @@
     </section>
 
     <!-- 实验室组别 -->
-    <section id="gallery" class="section section-dark">
+    <section id="page-groups" class="page-section section section-dark" data-page="groups">
         <div class="container">
             <div class="section-head">
                 <span class="section-num">04</span>
-                <h2 class="section-title">实验室组别（点击查看详情）</h2>
+                <h2 class="section-title">实验室组别<span class="section-hint">› 点击卡片查看详情</span></h2>
                 <p class="section-desc">Laboratory Groups</p>
             </div>
 
@@ -754,11 +915,215 @@
     </section>
 
 
-    <!-- 加入我们 -->
-    <section id="join" class="section">
+    <!-- 指导老师 -->
+    <section id="page-teachers" class="page-section section section-dark teachers-page" data-page="teachers">
         <div class="container">
             <div class="section-head">
                 <span class="section-num">05</span>
+                <h2 class="section-title">指导老师</h2>
+                <p class="section-desc">Our Mentors</p>
+            </div>
+
+            <div class="teachers-hud">
+                <span class="t-hud-item"><span class="t-hud-led"></span> LMK-MENTOR_LIST</span>
+                <span class="t-hud-item">RECORDS: 07</span>
+                <span class="t-hud-item t-blink">// LOAD_OK</span>
+            </div>
+
+            <div class="teachers-grid">
+                <!-- 赵老师 -->
+                <article class="teacher-card">
+                    <div class="t-card-frame"><span class="t-f-c tl"></span><span class="t-f-c tr"></span><span class="t-f-c bl"></span><span class="t-f-c br"></span></div>
+                    <div class="teacher-id-tag">MENTOR_ID: M-001</div>
+
+                    <header class="teacher-head">
+                        <div class="teacher-avatar t-avatar-zhao">
+                            <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                <circle cx="50" cy="38" r="14"/>
+                                <path d="M20 88c6-20 20-30 30-30s24 10 30 30"/>
+                                <path d="M36 30c0-4 6-8 14-8s14 4 14 8"/>
+                                <rect x="36" y="34" width="28" height="6" rx="1"/>
+                            </svg>
+                            <span class="t-rank">SENIOR</span>
+                        </div>
+                        <div class="teacher-title">
+                            <h3>赵丽霞</h3>
+                            <span class="teacher-role">信息工程学院院长 / LMK实验室负责人</span>
+                            <div class="teacher-tags">
+                                <span>三创赛</span><span>计设大赛</span><span>AI挑战赛</span><span>大创项目</span><span>Web开发</span><span>新媒体</span>
+                            </div>
+                        </div>
+                    </header>
+
+                    <div class="teacher-meta">
+                        <div class="t-meta-row"><span class="t-meta-k">职称</span><span class="t-meta-v">副教授</span></div>
+                        <div class="t-meta-row"><span class="t-meta-k">所属</span><span class="t-meta-v">信息工程学院 / 党总支书记</span></div>
+                        <div class="t-meta-row"><span class="t-meta-k">课程</span><span class="t-meta-v">国家级一流本科《网页设计基础》负责人</span></div>
+                        <div class="t-meta-row"><span class="t-meta-k">方向</span><span class="t-meta-v">主力竞赛项目带队指导</span></div>
+                    </div>
+
+                    <div class="teacher-desc">
+                        <p>
+                            赵丽霞老师是 LMK 实验室的总负责人，同时担任信息工程学院院长与党总支书记。
+                            作为国家级一流本科课程《网页设计基础》的课程负责人，她将课程建设与实验室培养深度联动，
+                            始终站在教学与科研的第一线。
+                        </p>
+                        <p>
+                            实验室绝大多数主力竞赛项目均由赵老师亲自带队指导，包括三创赛、中国大学生计算机设计大赛、
+                            AI 挑战赛、大学生创新创业训练计划项目，以及 Web 开发与新媒体类项目。
+                            多年来累计指导学生斩获国家级、省级奖项百余项。
+                        </p>
+                        <div class="teacher-quote">
+                            <span class="quote-mark">"</span>
+                            <p>实验室不是课堂的延伸，而是课堂之外另一条更陡但也更值得走的路。
+                            在这里，问题不是拦路虎，而是成长的台阶——动手做、敢犯错、多复盘，
+                            三年的实验室生活，会是你们大学最宝贵的资产。</p>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- 张老师 -->
+                <article class="teacher-card">
+                    <div class="t-card-frame"><span class="t-f-c tl"></span><span class="t-f-c tr"></span><span class="t-f-c bl"></span><span class="t-f-c br"></span></div>
+                    <div class="teacher-id-tag">MENTOR_ID: M-002</div>
+
+                    <header class="teacher-head">
+                        <div class="teacher-avatar t-avatar-zhang">
+                            <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                <circle cx="50" cy="38" r="14"/>
+                                <path d="M20 88c6-20 20-30 30-30s24 10 30 30"/>
+                                <path d="M36 28l2 4 4-2 4 2 2-4 2 4"/>
+                                <path d="M30 40c4-4 16-4 20 0"/>
+                            </svg>
+                            <span class="t-rank">MENTOR</span>
+                        </div>
+                        <div class="teacher-title">
+                            <h3>张奇</h3>
+                            <span class="teacher-role">实验室常驻指导教师</span>
+                            <div class="teacher-tags">
+                                <span>日常管理</span><span>项目开发</span><span>竞赛备赛</span><span>大创申报</span><span>系统编码</span>
+                            </div>
+                        </div>
+                    </header>
+
+                    <div class="teacher-meta">
+                        <div class="t-meta-row"><span class="t-meta-k">职称</span><span class="t-meta-v">讲师</span></div>
+                        <div class="t-meta-row"><span class="t-meta-k">所属</span><span class="t-meta-v">信息工程学院 / LMK实验室</span></div>
+                        <div class="t-meta-row"><span class="t-meta-k">职责</span><span class="t-meta-v">日常管理 · 项目开发 · 竞赛备赛</span></div>
+                        <div class="t-meta-row"><span class="t-meta-k">方向</span><span class="t-meta-v">系统编码与作品打磨 · 大创立项</span></div>
+                    </div>
+
+                    <div class="teacher-desc">
+                        <p>
+                            张奇老师是 LMK 实验室的常驻指导教师，承担实验室日常管理、学生项目开发、
+                            竞赛备赛以及大创项目申报等一线工作。从需求梳理、架构设计到代码评审、
+                            测试部署，张老师亲自指导学生完成系统编码与作品打磨，按工业标准带学生走完项目全流程。
+                        </p>
+                        <p>
+                            张老师与赵丽霞老师密切配合，分工负责学生项目管理、代码开发、竞赛备赛
+                            与大创立项申报，确保实验室每一个项目从立项到结题都有专人盯守、持续迭代。
+                        </p>
+                        <div class="teacher-quote">
+                            <span class="quote-mark">"</span>
+                            <p>技术是骨，协作是魂。学会写代码只是开始，学会和一群人把一件事做好，
+                            才是你在这里要真正掌握的能力。</p>
+                        </div>
+                    </div>
+                </article>
+            </div>
+
+            <!-- 竞赛项目指导教师分隔 -->
+            <div class="teachers-divider">
+                <span class="td-line"></span>
+                <h3 class="td-title">竞赛项目指导教师</h3>
+                <span class="td-line"></span>
+            </div>
+
+            <div class="teachers-grid-sm">
+                <article class="teacher-card-sm">
+                    <div class="t-sm-frame"><span class="t-f-c tl"></span><span class="t-f-c br"></span></div>
+                    <div class="teacher-head-sm">
+                        <div class="teacher-avatar-sm t-avatar-li">李</div>
+                        <div class="teacher-title-sm">
+                            <h4>李昊凌</h4>
+                            <span class="teacher-role-sm">竞赛项目指导教师</span>
+                        </div>
+                    </div>
+                    <div class="teacher-tags">
+                        <span>计设大赛</span><span>Web方向</span>
+                    </div>
+                    <p class="teacher-desc-sm">负责计算机设计大赛 Web 方向项目的指导工作。</p>
+                </article>
+
+                <article class="teacher-card-sm">
+                    <div class="t-sm-frame"><span class="t-f-c tl"></span><span class="t-f-c br"></span></div>
+                    <div class="teacher-head-sm">
+                        <div class="teacher-avatar-sm t-avatar-wang">王</div>
+                        <div class="teacher-title-sm">
+                            <h4>王丹</h4>
+                            <span class="teacher-role-sm">竞赛项目指导教师</span>
+                        </div>
+                    </div>
+                    <div class="teacher-tags">
+                        <span>辽宁省AI挑战赛</span><span>AI类项目</span>
+                    </div>
+                    <p class="teacher-desc-sm">负责辽宁省 AI 挑战赛相关 AI 类项目的指导工作。</p>
+                </article>
+
+                <article class="teacher-card-sm">
+                    <div class="t-sm-frame"><span class="t-f-c tl"></span><span class="t-f-c br"></span></div>
+                    <div class="teacher-head-sm">
+                        <div class="teacher-avatar-sm t-avatar-bai">白</div>
+                        <div class="teacher-title-sm">
+                            <h4>白鹤</h4>
+                            <span class="teacher-role-sm">竞赛项目指导教师</span>
+                        </div>
+                    </div>
+                    <div class="teacher-tags">
+                        <span>辽宁省AI挑战赛</span><span>AI类项目</span>
+                    </div>
+                    <p class="teacher-desc-sm">负责辽宁省 AI 挑战赛相关 AI 类项目的指导工作。</p>
+                </article>
+
+                <article class="teacher-card-sm">
+                    <div class="t-sm-frame"><span class="t-f-c tl"></span><span class="t-f-c br"></span></div>
+                    <div class="teacher-head-sm">
+                        <div class="teacher-avatar-sm t-avatar-yan">闫</div>
+                        <div class="teacher-title-sm">
+                            <h4>闫海龙</h4>
+                            <span class="teacher-role-sm">竞赛项目指导教师</span>
+                        </div>
+                    </div>
+                    <div class="teacher-tags">
+                        <span>互联网+</span><span>发现杯</span>
+                    </div>
+                    <p class="teacher-desc-sm">负责互联网+、发现杯项目的指导工作。</p>
+                </article>
+
+                <article class="teacher-card-sm">
+                    <div class="t-sm-frame"><span class="t-f-c tl"></span><span class="t-f-c br"></span></div>
+                    <div class="teacher-head-sm">
+                        <div class="teacher-avatar-sm t-avatar-shen">沈</div>
+                        <div class="teacher-title-sm">
+                            <h4>沈晓洁</h4>
+                            <span class="teacher-role-sm">竞赛项目指导教师</span>
+                        </div>
+                    </div>
+                    <div class="teacher-tags">
+                        <span>互联网+</span><span>发现杯</span>
+                    </div>
+                    <p class="teacher-desc-sm">负责互联网+、发现杯项目的指导工作。</p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- 加入我们 -->
+    <section id="page-join" class="page-section section" data-page="join">
+        <div class="container">
+            <div class="section-head">
+                <span class="section-num">06</span>
                 <h2 class="section-title">加入我们</h2>
                 <p class="section-desc">Join LMK Laboratory</p>
             </div>
@@ -805,7 +1170,7 @@
                             <span class="step-num">5</span>
                             <div>
                                 <h4>正式入组</h4>
-                                <p>通过考察后正式加入实验室，分配方向与导师</p>
+                                <p>通过考察后正式加入实验室，后期分配方向与导师</p>
                             </div>
                         </li>
                     </ol>
@@ -905,7 +1270,8 @@
         </div>
     </section>
 
-    <!-- 页脚 -->
+    
+<!-- 页脚 -->
     <footer class="footer">
         <div class="container">
             <div class="footer-grid">
@@ -927,11 +1293,11 @@
                 <div class="footer-col">
                     <h4>实验室组别</h4>
                     <ul>
-                        <li><a href="#gallery">前端组</a></li>
-                        <li><a href="#gallery">后台组</a></li>
-                        <li><a href="#gallery">多媒体组</a></li>
-                        <li><a href="#gallery">平面设计组</a></li>
-                        <li><a href="#gallery">3D建模组</a></li>
+                        <li><a href="?page=groups">前端组</a></li>
+                        <li><a href="?page=groups">后台组</a></li>
+                        <li><a href="?page=groups">多媒体组</a></li>
+                        <li><a href="?page=groups">平面设计组</a></li>
+                        <li><a href="?page=groups">3D建模组</a></li>
                     </ul>
                 </div>
             </div>
@@ -1351,7 +1717,7 @@
     </div>
 </div>
 
-    <script src="js/main.js?v=v2025"></script>
-    <script src="js/admin.js?v=v2025"></script>
+    <script src="js/main.js?v=loaderPro3"></script>
+    <script src="js/admin.js?v=loaderPro3"></script>
 </body>
 </html>

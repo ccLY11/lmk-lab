@@ -68,43 +68,127 @@
     }
 
     const fill = loader.querySelector('.loader-progress-fill');
-    const percentEl = loader.querySelector('.loader-percent');
-    const statusText = loader.querySelector('.loader-status-text');
+    const glow = loader.querySelector('.loader-progress-glow');
+    const percentEl = loader.getElementById ? document.getElementById('loaderPercent') : loader.querySelector('.loader-percent');
+    const percentEl2 = document.getElementById('loaderPercent');
+    const pctEl = percentEl2 || percentEl;
+    const statusText = document.getElementById('loaderStatusText') || loader.querySelector('.loader-status-text');
     const logEl = loader.querySelector('.loader-log');
+    const modEl = document.getElementById('loaderModCount');
+    const memEl = document.getElementById('loaderMem');
+    const uptimeEl = document.getElementById('loaderUptime');
+    const typingEl = document.getElementById('loaderTyping');
 
-    // 模拟加载日志（科技风）
+    const startTime = performance.now();
+    function pad2(n) { return n < 10 ? '0' + n : '' + n; }
+    function fmtUptime(t) {
+        const total = Math.floor(t / 1000);
+        const m = pad2(Math.floor(total / 60));
+        const s = pad2(total % 60);
+        const cs = pad2(Math.floor((t % 1000) / 10));
+        return m + ':' + s + '.' + cs;
+    }
+
+    // 模拟加载日志（科技风，含结构化标签）
     const logs = [
-        '> 正在加载实验室核心模块...',
-        '> 初始化数据库连接 [OK]',
-        '> 同步招新信息 [OK]',
-        '> 校验实验室组别配置 [OK]',
-        '> 启动实时订阅通道 [OK]',
-        '> 准备就绪，欢迎加入 LMK 实验室'
+        { ts: true, msg: ['LMK-LAB boot sequence ', '<span class="log-h">v2.026</span>'], tag: 'INF' },
+        { ts: true, msg: ['Loading core module: <span class="log-h">lab_kernel</span>'], tag: 'INF' },
+        { ts: true, msg: ['Init database pool: <span class="log-h">pool=4 ok</span>'], tag: 'OK' },
+        { ts: true, msg: ['Mount recruitment channel <span class="log-h">/recruit/v1</span>'], tag: 'OK' },
+        { ts: true, msg: ['Loading groups config: 05 units'], tag: 'INF' },
+        { ts: true, msg: ['Subscribe realtime feed... ack.'], tag: 'OK' },
+        { ts: true, msg: ['Warm caches... 12MB → 128MB'], tag: 'WRN' },
+        { ts: true, msg: ['Ready. 欢迎加入 LMK 实验室.'], tag: 'OK' }
+    ];
+
+    // 终端打字机效果文字序列
+    const typingLines = [
+        './lmk_boot.sh --init',
+        'mount /mnt/lab_share',
+        'modprobe lab_core.ko',
+        'db.ping() → ok',
+        'launch::router /home',
+        '[boot] ready.'
     ];
 
     // 读取内联脚本已设置的进度（如果有）
     let progress = window.__loaderProgress || 0;
-    let logIndex = Math.min(logs.length, Math.floor(progress / (100 / logs.length)));
+    let logIndex = 0;
+    let typingIndex = 0;
     let loading = true;
 
     function setStatus(text) { if (statusText) statusText.textContent = text; }
-    function addLog(text) {
+    function fmtNow(t) {
+        const d = new Date(startTime + t);
+        return pad2(d.getMinutes()) + ':' + pad2(d.getSeconds()) + '.' + pad2(Math.floor(d.getMilliseconds()/10));
+    }
+    function addLog(entry) {
         if (!logEl) return;
         const line = document.createElement('div');
         line.className = 'log-line';
-        line.textContent = text;
+        if (entry.ts) {
+            const ts = document.createElement('span');
+            ts.className = 'log-ts';
+            ts.textContent = '[T+' + fmtNow(performance.now() - startTime) + ']';
+            line.appendChild(ts);
+        }
+        const msg = document.createElement('span');
+        msg.className = 'log-msg';
+        msg.innerHTML = entry.msg.join ? entry.msg.join('') : entry.msg;
+        line.appendChild(msg);
+        if (entry.tag) {
+            const tag = document.createElement('span');
+            tag.className = 'log-tag ' + (entry.tag === 'OK' ? 'ok' : entry.tag === 'WRN' ? 'wrn' : 'inf');
+            tag.textContent = entry.tag;
+            line.appendChild(tag);
+        }
         logEl.appendChild(line);
+        // 自动滚到底部
+        logEl.scrollTop = logEl.scrollHeight;
     }
     function updateProgress(v) {
         progress = Math.min(100, v);
         if (fill) fill.style.right = (100 - progress) + '%';
-        if (percentEl) percentEl.textContent = Math.floor(progress) + '%';
+        if (glow) glow.style.left = progress + '%';
+        if (pctEl) pctEl.textContent = Math.floor(progress) + '%';
         window.__loaderProgress = progress;
+        // HUD：模块数（随进度 1→6）、内存（12→104MB）
+        if (modEl) {
+            const mc = Math.max(1, Math.min(6, Math.ceil(progress / (100 / 6))));
+            modEl.textContent = mc < 10 ? '0' + mc : '' + mc;
+        }
+        if (memEl) {
+            const m = 12 + Math.floor((progress / 100) * 92);
+            memEl.textContent = '' + m;
+        }
     }
+
+    // UPTIME 实时刷新
+    const uptimeTimer = setInterval(() => {
+        if (uptimeEl) uptimeEl.textContent = fmtUptime(performance.now() - startTime);
+    }, 50);
+
+    // 终端打字机
+    function typeNext() {
+        if (!typingEl || !loading) return;
+        const text = typingLines[typingIndex % typingLines.length];
+        typingIndex++;
+        let i = 0;
+        typingEl.textContent = '';
+        const sub = setInterval(() => {
+            if (!loading) { clearInterval(sub); return; }
+            typingEl.textContent += text.charAt(i);
+            i++;
+            if (i >= text.length) {
+                clearInterval(sub);
+                setTimeout(typeNext, 900);
+            }
+        }, 55);
+    }
+    setTimeout(typeNext, 400);
 
     // 立即更新一次（用内联脚本的当前进度）
     updateProgress(progress);
-    logIndex = 0;
 
     // 启动日志和状态更新（立即打印，不等待）
     function printLogsAndStatus() {
@@ -113,10 +197,10 @@
             addLog(logs[logIndex]);
             logIndex++;
         }
-        if (progress < 30) setStatus('系统初始化中');
-        else if (progress < 60) setStatus('同步实验室数据');
-        else if (progress < 90) setStatus('准备招新通道');
-        else setStatus('即将进入实验室');
+        if (progress < 30)      setStatus('初始化内核模块与启动脚本');
+        else if (progress < 60) setStatus('装载实验室组别与数据订阅');
+        else if (progress < 90) setStatus('预热缓存与招新通道');
+        else                    setStatus('系统就绪，即将进入实验室');
     }
     printLogsAndStatus();
 
@@ -140,7 +224,7 @@
 
     function finish() {
         // 真实页面加载完成 + 至少展示 1.8s，再对焦过渡
-        const minDisplayTime = 1800;
+        const minDisplayTime = 1900;
         const start = performance.now();
         function tryFocus() {
             const elapsed = performance.now() - start;
@@ -149,6 +233,7 @@
                 loader.classList.add('focusing');
                 const frontApp = document.getElementById('frontApp');
                 if (frontApp) frontApp.classList.add('entered');
+                clearInterval(uptimeTimer);
                 // 2. 等过渡完成（0.95s 失焦 + 1.05s 对焦尾段）
                 setTimeout(() => {
                     if (loader.parentNode) loader.parentNode.removeChild(loader);
@@ -166,13 +251,14 @@
             updateProgress(100);
             loading = false;
             while (logIndex < logs.length) { addLog(logs[logIndex]); logIndex++; }
-            setStatus('即将进入实验室');
+            setStatus('系统就绪，即将进入实验室');
             loader.classList.add('focusing');
             const frontApp = document.getElementById('frontApp');
             if (frontApp) frontApp.classList.add('entered');
+            clearInterval(uptimeTimer);
             setTimeout(() => { if (loader.parentNode) loader.parentNode.removeChild(loader); }, 1200);
         }
-    }, 6000);
+    }, 6200);
 })();
 
 // ===== 导航栏滚动效果 =====
@@ -740,6 +826,9 @@ function initMouseInteractions() {
 
     // 26. 右侧滚动指示器
     initScrollSpy();
+
+    // 27. 多页路由：基于 ?page= 的单页切换
+    try { initPageRouter(); } catch(err) { console.warn('page-router init fail:', err); }
 }
 
 // ===== 粒子网络背景 =====
@@ -1678,3 +1767,191 @@ function initScrollSpy() {
     document.head.appendChild(style);
 })();
 
+
+// ===== 多页路由：基于 URL ?page= 的单页切换 =====
+function initPageRouter() {
+    const PAGE_IDS = ['index', 'about', 'research', 'awards', 'groups', 'teachers', 'join'];
+    const DEFAULT_PAGE = 'index';
+    const pageSections = {};
+    PAGE_IDS.forEach(id => { pageSections[id] = document.getElementById('page-' + id); });
+
+    function getPageFromUrl() {
+        const search = location.search || '';
+        const m = search.match(/[?&]page=([a-zA-Z0-9_-]+)/);
+        if (!m) return DEFAULT_PAGE;
+        const p = (m[1] || '').toLowerCase();
+        if (PAGE_IDS.includes(p)) return p;
+        // 兼容旧锚点的情况：如果用户输入了旧锚点 id
+        const oldMap = { 'home': 'index', 'about':'about', 'research':'research', 'awards':'awards', 'gallery':'groups', 'join':'join' };
+        if (oldMap[p]) return oldMap[p];
+        return DEFAULT_PAGE;
+    }
+
+    function setActiveNav(page) {
+        const navLinks = document.querySelectorAll('.nav-link');
+        navLinks.forEach(l => {
+            const dp = l.getAttribute('data-page');
+            if (dp === page) l.classList.add('active');
+            else l.classList.remove('active');
+        });
+    }
+
+    // 创建或获取过渡遮罩
+    let overlay = document.querySelector('.page-transition-overlay');
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.className = 'page-transition-overlay';
+        overlay.setAttribute('aria-hidden', 'true');
+        overlay.innerHTML = `
+            <div class="pto-grid"></div>
+            <div class="pto-ring"></div>
+            <div class="pto-cross"></div>
+            <span class="pto-corner tl"></span><span class="pto-corner tr"></span>
+            <span class="pto-corner bl"></span><span class="pto-corner br"></span>
+            <div class="pto-status">
+                <span class="pto-led"></span>
+                <span>SWITCHING MODULE</span>
+                <span class="pto-dots"><span>.</span><span>.</span><span>.</span></span>
+            </div>`;
+        document.body.appendChild(overlay);
+    }
+
+    let isFirstLoad = true;
+    let currentPage = null;
+    let isAnimating = false;
+    const SWEEP_MS = 700;     // 遮罩总时长（圆形扩散+收缩）
+    const MID_MS = 330;       // 遮罩盖住全屏的时刻（在此切换页面）
+
+    function updateUrl(page, pushState) {
+        if (!pushState) return;
+        const q = page === DEFAULT_PAGE ? location.pathname : `${location.pathname}?page=${page}`;
+        try { history.replaceState({ page }, '', q); } catch(_) {}
+    }
+
+    // 真正执行页面切换（隐藏其它、显示目标、动画/URL/active 等）
+    function doPageSwitch(page, pushState) {
+        // 1) 隐藏其它
+        PAGE_IDS.forEach(id => {
+            const el = pageSections[id];
+            if (!el || id === page) return;
+            el.classList.remove('page-visible', 'page-in', 'page-out');
+            el.style.display = 'none';
+        });
+
+        // 2) 显示目标
+        const target = pageSections[page];
+        if (target) {
+            target.style.display = '';
+            target.classList.remove('page-in', 'page-out');
+            void target.offsetHeight;
+            target.classList.add('page-visible');
+            // 遮罩盖住时设置目标为"待入场"状态，遮罩滑出时再触发 page-in
+            setTimeout(() => target.classList.add('page-in'), 30);
+        }
+
+        // 3) 导航 active
+        setActiveNav(page);
+
+        // 4) 更新 URL
+        updateUrl(page, pushState);
+
+        // 5) 回到顶部
+        try { window.scrollTo({ top: 0, behavior: 'auto' }); } catch(_) {}
+
+        // 6) 触发入场动画
+        try {
+            const reveals = (target || document).querySelectorAll('.reveal');
+            reveals.forEach(el => {
+                el.style.visibility = 'visible';
+                el.classList.add('revealed');
+            });
+        } catch(_) {}
+
+        // 7) 刷新数字动画
+        try {
+            const nums = (target || document).querySelectorAll('[data-count], .award-summary-num, .hero-stat-num');
+            nums.forEach(el => {
+                el.style.animation = 'none';
+                void el.offsetHeight;
+                el.style.animation = '';
+            });
+        } catch(_) {}
+    }
+
+    function showPage(page, pushState) {
+        page = page || DEFAULT_PAGE;
+        if (!PAGE_IDS.includes(page)) page = DEFAULT_PAGE;
+
+        // 同页点击：仅同步 URL/active，不播动画
+        if (!isFirstLoad && currentPage === page) {
+            setActiveNav(page);
+            updateUrl(page, pushState);
+            return;
+        }
+        // 动画进行中：忽略
+        if (isAnimating) return;
+
+        // 首次加载 / 无遮罩：直接显示，不带过渡
+        if (isFirstLoad || !overlay) {
+            doPageSwitch(page, pushState);
+            isFirstLoad = false;
+            currentPage = page;
+            return;
+        }
+
+        isAnimating = true;
+        const oldEl = currentPage ? pageSections[currentPage] : null;
+
+        // 1) 启动遮罩入场 + 旧页面退出动画（同时进行）
+        overlay.classList.remove('active');
+        void overlay.offsetWidth;
+        overlay.classList.add('active');
+        if (oldEl) {
+            oldEl.classList.remove('page-in');
+            oldEl.classList.add('page-out');
+        }
+
+        // 2) 遮罩盖住全屏的时刻：执行真正的页面切换
+        setTimeout(() => {
+            if (oldEl) {
+                oldEl.classList.remove('page-visible', 'page-out');
+                oldEl.style.display = 'none';
+            }
+            doPageSwitch(page, pushState);
+        }, MID_MS);
+
+        // 3) 遮罩动画完成后清理
+        setTimeout(() => {
+            overlay.classList.remove('active');
+            isAnimating = false;
+        }, SWEEP_MS + 40);
+
+        currentPage = page;
+    }
+
+    // 点击 <a href="?page=xx">：不重新加载，用前端切换
+    function bindPageLinks() {
+        const links = document.querySelectorAll('a[href*="?page="]');
+        links.forEach(a => {
+            a.addEventListener('click', function(e) {
+                const href = this.getAttribute('href') || '';
+                const m = href.match(/page=([a-zA-Z0-9_-]+)/);
+                if (!m) return;
+                e.preventDefault();
+                const p = (m[1] || '').toLowerCase();
+                showPage(PAGE_IDS.includes(p) ? p : DEFAULT_PAGE, true);
+                // 关闭移动端菜单
+                try {
+                    const nt = document.getElementById('navToggle');
+                    const nm = document.getElementById('navMenu');
+                    if (nt) nt.classList.remove('active');
+                    if (nm) nm.classList.remove('active');
+                } catch(_) {}
+            });
+        });
+    }
+
+    bindPageLinks();
+    window.addEventListener('popstate', () => showPage(getPageFromUrl(), false));
+    showPage(getPageFromUrl(), true);
+}
