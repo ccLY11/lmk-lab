@@ -414,7 +414,8 @@
             frontApp.style.display = 'none';
             adminApp.style.display = 'block';
             if (sideNav) sideNav.style.display = 'none';
-            document.body.style.background = '#0a1428';
+            document.body.style.background = '#f5f6f8';
+            document.body.style.margin = '0';
             checkLogin();
         } else {
             frontApp.style.display = 'block';
