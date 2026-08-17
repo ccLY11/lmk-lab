@@ -1,4 +1,15 @@
 /* 详情面板深色主题覆盖样式 */
+.detail-title {
+    background: linear-gradient(135deg, #ffffff 0%, #93c5fd 70%, #60a5fa 100%) !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    color: #f1f5f9 !important;
+    filter: drop-shadow(0 2px 8px rgba(56, 189, 248, 0.25)) !important;
+}
+.detail-subtitle {
+    color: rgba(148,163,184,0.85) !important;
+}
 .detail-desc-wrap {
     background: linear-gradient(180deg, rgba(20,40,75,0.92), rgba(10,22,45,0.96)) !important;
     border: 1px solid rgba(59,130,246,0.25) !important;

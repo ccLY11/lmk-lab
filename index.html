@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -7,10 +7,12 @@
     <meta name="description" content="辽宁理工学院信息工程学院LMK实验室官方网站">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://idkfeltsswxdlbkduhcs.supabase.co" crossorigin>
+
+
     <link rel="dns-prefetch" href="https://idkfeltsswxdlbkduhcs.supabase.co">
-    <link rel="stylesheet" href="css/style.css?v=mobiNav1">
+    <link rel="stylesheet" href="css/style.css?v=textFixV19">
     <link rel="stylesheet" href="css/admin.css">
-    <link rel="stylesheet" href="css/detail-panel-override.css?v=v2025">
+    <link rel="stylesheet" href="css/detail-panel-override.css?v=adminProtectV2">
 </head>
 <body>
 
@@ -151,7 +153,7 @@
     <!-- ===== 前台应用 ===== -->
     <div id="frontApp">
 
-    <!-- 顶部公告条 -->
+    <!-- 顶部公告条（横向铺满）-->
     <div class="top-bar">
         <div class="top-bar-inner">
             <span class="top-bar-text">LMK实验室 2026年秋季招新进行中</span>
@@ -159,32 +161,15 @@
         </div>
     </div>
 
-    <!-- 导航栏 -->
-    <header class="header" id="header">
-        <div class="container nav">
-            <a href="?page=index" class="brand">
-                <div class="brand-mark">LMK</div>
-                <div class="brand-text">
-                    <span class="brand-name">LMK 实验室</span>
-                    <span class="brand-sub">Liaoning Institute of Technology</span>
-                </div>
-            </a>
-            <nav class="nav-menu" id="navMenu">
-                <a href="?page=index" class="nav-link active" data-page="index">首页</a>
-                <a href="?page=about" class="nav-link" data-page="about">实验室简介</a>
-                <a href="?page=research" class="nav-link" data-page="research">研究方向</a>
-                <a href="?page=awards" class="nav-link" data-page="awards">奖项成就</a>
-                <a href="?page=groups" class="nav-link" data-page="groups">实验室组别</a>
-                <a href="?page=teachers" class="nav-link" data-page="teachers">指导老师</a>
-                <a href="?page=join" class="nav-link" data-page="join">加入我们</a>
-            </nav>
-            <button class="nav-toggle" id="navToggle" aria-label="菜单">
-                <span></span><span></span><span></span>
-            </button>
-        </div>
-    </header>
+    <!-- 移动端菜单按钮 -->
+    <button class="nav-toggle" id="navToggle" aria-label="菜单">
+        <span></span><span></span><span></span>
+    </button>
 
-    <!-- Hero -->
+    <!-- 移动端侧边栏遮罩 -->
+    <div class="snb-overlay" id="snbOverlay"></div>
+
+    <!-- Hero（全宽横向铺满） -->
     <section id="home" class="hero">
         <div class="container hero-grid">
             <div class="hero-text">
@@ -246,6 +231,89 @@
             </div>
         </div>
     </section>
+
+    <!-- 页面布局：导航栏 + 内容区 -->
+    <div class="page-layout">
+        <div class="page-row">
+
+    <!-- ===== 左侧垂直导航栏 ===== -->
+    <aside class="side-nav-bar" id="sideNavBar">
+        <!-- 左侧品牌区 -->
+        <div class="snb-brand">
+            <a href="?page=index" class="snb-brand-link">
+                <div class="snb-brand-mark">LMK</div>
+                <div class="snb-brand-text">
+                    <span class="snb-brand-name">LMK 实验室</span>
+                    <span class="snb-brand-sub">Liaoning Institute of Technology</span>
+                </div>
+            </a>
+        </div>
+
+        <!-- 导航菜单（水平排列） -->
+        <nav class="snb-menu top-nav-menu" id="navMenu">
+            <a href="?page=index" class="nav-link active" data-page="index">
+                <span class="nav-ico nav-ico-home">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 11 12 3l9 8"/><path d="M5 10v10h14V10"/></svg>
+                </span>
+                <span class="nav-label">首页</span>
+                <span class="nav-indicator"></span>
+            </a>
+            <a href="?page=about" class="nav-link" data-page="about">
+                <span class="nav-ico nav-ico-about">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 2"/></svg>
+                </span>
+                <span class="nav-label">实验室简介</span>
+                <span class="nav-indicator"></span>
+            </a>
+            <a href="?page=research" class="nav-link" data-page="research">
+                <span class="nav-ico nav-ico-research">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 3L5 7l4 4M15 3l4 4-4 4M14 4l-4 16"/></svg>
+                </span>
+                <span class="nav-label">研究方向</span>
+                <span class="nav-indicator"></span>
+            </a>
+            <a href="?page=awards" class="nav-link" data-page="awards">
+                <span class="nav-ico nav-ico-awards">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 21h8"/><path d="M12 17v4"/><circle cx="12" cy="9" r="5"/><path d="M16 4h3v3M8 4H5v3"/></svg>
+                </span>
+                <span class="nav-label">奖项成就</span>
+                <span class="nav-indicator"></span>
+            </a>
+            <a href="?page=groups" class="nav-link" data-page="groups">
+                <span class="nav-ico nav-ico-groups">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+                </span>
+                <span class="nav-label">实验室组别</span>
+                <span class="nav-indicator"></span>
+            </a>
+            <a href="?page=teachers" class="nav-link" data-page="teachers">
+                <span class="nav-ico nav-ico-teachers">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                </span>
+                <span class="nav-label">指导老师</span>
+                <span class="nav-indicator"></span>
+            </a>
+            <a href="?page=join" class="nav-link" data-page="join">
+                <span class="nav-ico nav-ico-join">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg>
+                </span>
+                <span class="nav-label">加入我们</span>
+                <span class="nav-indicator"></span>
+            </a>
+        </nav>
+
+        <!-- 底部状态区 -->
+        <div class="snb-footer">
+            <div class="snb-status">
+                <span class="snb-status-dot"></span>
+                <span class="snb-status-text">SYSTEM ONLINE</span>
+            </div>
+            <div class="snb-version">v2026</div>
+        </div>
+    </aside>
+
+            <!-- 页面主内容区（导航栏右侧） -->
+            <main class="page-main">
 
         <!-- ===== 多页路由容器 ===== -->
 
@@ -310,7 +378,7 @@
                     <span class="qe-corner tl"></span><span class="qe-corner tr"></span>
                     <span class="qe-corner bl"></span><span class="qe-corner br"></span>
                     <div class="qe-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></div>
-                    <div class="qe-body"><h3>指导老师</h3><p>赵丽霞 · 张奇 等7位指导老师介绍</p></div>
+                    <div class="qe-body"><h3>指导老师</h3><p>赵丽霞老师 · LMK 实验室负责人 · 信息工程学院院长</p></div>
                     <div class="qe-arrow">→</div>
                     <div class="gallery-image-overlay"></div>
                 </a>
@@ -332,6 +400,156 @@
                 <span class="qe-ok">[OK]</span>
                 <span class="qe-comment">// INDEX_LOAD_COMPLETE · 选择上方模块继续</span>
                 <span class="qe-caret"></span>
+            </div>
+
+            <!-- 实验室速览数据 -->
+            <div class="home-stats">
+                <div class="home-stats-head">
+                    <span class="about-block-num">// 01</span>
+                    <h3>实验室速览</h3>
+                    <span class="home-stats-tag">REAL-TIME</span>
+                </div>
+                <div class="home-stats-grid">
+                    <div class="home-stat">
+                        <div class="home-stat-num">2013</div>
+                        <div class="home-stat-label">成立年份</div>
+                        <p>十余年学生科创平台沉淀</p>
+                    </div>
+                    <div class="home-stat">
+                        <div class="home-stat-num">5</div>
+                        <div class="home-stat-label">研究方向</div>
+                        <p>前端 · 后台 · 多媒体 · 设计 · 3D</p>
+                    </div>
+                    <div class="home-stat">
+                        <div class="home-stat-num">200<span>+</span></div>
+                        <div class="home-stat-label">累计奖项</div>
+                        <p>覆盖国家级、省级、校级赛事</p>
+                    </div>
+                    <div class="home-stat">
+                        <div class="home-stat-num">100<span>+</span></div>
+                        <div class="home-stat-label">培养学员</div>
+                        <p>毕业去往互联网与科研院所</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 核心亮点 -->
+            <div class="home-highlights">
+                <div class="home-highlights-head">
+                    <span class="about-block-num">// 02</span>
+                    <h3>为什么选择 LMK</h3>
+                </div>
+                <p class="home-highlights-desc">不只是一个社团，而是一条从课堂走向真实项目的成长路径。</p>
+                <div class="highlights-grid">
+                    <div class="highlight-card">
+                        <div class="highlight-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 3L4 7l4 4M16 3l4 4-4 4M14 4l-4 16"/></svg>
+                        </div>
+                        <h4>真实项目驱动</h4>
+                        <p>以竞赛作品与实际需求为载体，从需求拆解到上线交付全流程参与，告别纸上谈兵。</p>
+                        <ul class="highlight-points">
+                            <li>Web 系统 / 小程序 / 数字媒体</li>
+                            <li>面向真实用户与评审场景</li>
+                        </ul>
+                    </div>
+                    <div class="highlight-card">
+                        <div class="highlight-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2L4 5v6c0 5 3.5 9 8 11 4.5-2 8-6 8-11V5l-8-3z"/><path d="M9 12l2 2 4-4"/></svg>
+                        </div>
+                        <h4>学科竞赛全覆盖</h4>
+                        <p>三创赛、计算机设计大赛、AI 挑战赛、蓝桥杯，多赛道持续投入，奖项稳定输出。</p>
+                        <ul class="highlight-points">
+                            <li>校赛 → 省赛 → 国赛完整路径</li>
+                            <li>历届获奖项目可复用沉淀</li>
+                        </ul>
+                    </div>
+                    <div class="highlight-card">
+                        <div class="highlight-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><path d="M16 3.13a4 4 0 0 1 0 7.75M21 21v-2a4 4 0 0 0-3-3.87"/></svg>
+                        </div>
+                        <h4>传帮带机制</h4>
+                        <p>高年级带低年级，新老 1:1 配比，知识在项目交接中沉淀，避免每次从零开始。</p>
+                        <ul class="highlight-points">
+                            <li>导师 + 学长学姐双重带教</li>
+                            <li>项目文档与复盘持续积累</li>
+                        </ul>
+                    </div>
+                    <div class="highlight-card">
+                        <div class="highlight-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                        </div>
+                        <h4>课程深度联动</h4>
+                        <p>与国家级一流本科课程《网页设计基础》打通，课程作业可延伸为实验室实战作品。</p>
+                        <ul class="highlight-points">
+                            <li>课程项目 → 竞赛作品转化</li>
+                            <li>教学与实战双向反哺</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 近期动态 -->
+            <div class="home-news">
+                <div class="home-news-head">
+                    <span class="about-block-num">// 03</span>
+                    <h3>近期动态</h3>
+                    <span class="home-news-tag">LATEST</span>
+                </div>
+                <div class="news-track">
+                    <div class="news-item">
+                        <div class="news-date">
+                            <span class="news-month">08</span>
+                            <span class="news-year">2026</span>
+                        </div>
+                        <div class="news-content">
+                            <span class="news-badge news-badge-hot">招新</span>
+                            <h4>2026 年度秋季招新启动</h4>
+                            <p>面向信息工程学院全体在校本科生开放申请，五步入组流程，线上提交即日开启。</p>
+                        </div>
+                    </div>
+                    <div class="news-item">
+                        <div class="news-date">
+                            <span class="news-month">07</span>
+                            <span class="news-year">2026</span>
+                        </div>
+                        <div class="news-content">
+                            <span class="news-badge news-badge-award">奖项</span>
+                            <h4>三创赛省级二等奖</h4>
+                            <p>第十六届全国大学生电子商务"创新、创意及创业"挑战赛斩获省级二等奖。</p>
+                        </div>
+                    </div>
+                    <div class="news-item">
+                        <div class="news-date">
+                            <span class="news-month">05</span>
+                            <span class="news-year">2026</span>
+                        </div>
+                        <div class="news-content">
+                            <span class="news-badge news-badge-tech">技术</span>
+                            <h4>AI 方向项目复盘会</h4>
+                            <p>基于手写文字去除系统的 AI 挑战赛项目完成阶段性复盘，沉淀训练流程与模型选型经验。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 招新入口 -->
+            <div class="home-cta">
+                <div class="home-cta-inner">
+                    <div class="home-cta-text">
+                        <span class="home-cta-tag">JOIN US · 2026 秋季招新</span>
+                        <h3>准备好加入 LMK 实验室了吗？</h3>
+                        <p>无论你是大一新生还是希望转型的学长学姐，只要有兴趣、有坚持，这里都为你留着一席位置。</p>
+                    </div>
+                    <div class="home-cta-actions">
+                        <a href="?page=join" class="home-cta-btn home-cta-primary" data-goto="join">
+                            <span>立即申请</span>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                        </a>
+                        <a href="?page=about" class="home-cta-btn home-cta-ghost" data-goto="about">
+                            <span>先了解实验室</span>
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -407,7 +625,7 @@
                             </div>
                             <div class="info-item">
                                 <dt>指导教师</dt>
-                                <dd>赵老师/张老师</dd>
+                                <dd>赵丽霞</dd>
                             </div>
                             <div class="info-item">
                                 <dt>实验室位置</dt>
@@ -424,6 +642,87 @@
                         </dl>
                     </div>
                 </aside>
+            </div>
+
+            <!-- 发展历程时间轴 -->
+            <div class="about-timeline">
+                <h3 class="about-block-title"><span class="about-block-num">// 02</span> 发展历程</h3>
+                <p class="about-block-desc">从一间教室到多方向协同的学生科创平台，LMK 实验室用十余年时间走出了自己的路。</p>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <span class="timeline-year">2013</span>
+                            <h4>实验室成立</h4>
+                            <p>以兴趣小组形式起步，最初仅由几名热爱编程的同学组成，开展基础学习与小项目实践。</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <span class="timeline-year">2016</span>
+                            <h4>组别体系建立</h4>
+                            <p>逐步形成前端、后台、多媒体、平面设计、3D 建模五大方向，建立传帮带培养机制。</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <span class="timeline-year">2019</span>
+                            <h4>竞赛成绩突破</h4>
+                            <p>首次在全国大学生计算机设计大赛、电子商务三创赛中获得省级与国家级奖项。</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <span class="timeline-year">2022</span>
+                            <h4>课程联动深化</h4>
+                            <p>与国家级一流本科课程《网页设计基础》深度联动，课程项目与实验室实战打通。</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <span class="timeline-year">2024</span>
+                            <h4>AI 方向拓展</h4>
+                            <p>引入 AI 挑战赛与算法竞赛，将人工智能实践纳入实验室研究方向体系。</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <span class="timeline-year">2026</span>
+                            <h4>持续迭代</h4>
+                            <p>累计培养百余名学生，覆盖国家级、省级、校级奖项 200 余项，毕业生遍布互联网与科研院所。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 实验室愿景 -->
+            <div class="about-vision">
+                <div class="vision-card">
+                    <div class="vision-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>
+                    </div>
+                    <h4>愿景</h4>
+                    <p>成为信息工程学院学生工程能力与创新意识孵化的核心平台，让每一位成员都能在这里找到自己的成长路径。</p>
+                </div>
+                <div class="vision-card">
+                    <div class="vision-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2L4 5v6c0 5 3.5 9 8 11 4.5-2 8-6 8-11V5l-8-3z"/><path d="M9 12l2 2 4-4"/></svg>
+                    </div>
+                    <h4>使命</h4>
+                    <p>以真实项目与学科竞赛为载体，培养具备工程素养、协作能力与创新精神的复合型应用人才。</p>
+                </div>
+                <div class="vision-card">
+                    <div class="vision-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2L4 6v6c0 5 3.5 9 8 11 4.5-2 8-6 8-11V6l-8-4z"/><path d="M12 8v4M12 14v.5"/></svg>
+                    </div>
+                    <h4>价值观</h4>
+                    <p>开放、协作、坚持、复盘；相信过程，也相信每一次动手之后的微小进步。</p>
+                </div>
             </div>
         </div>
     </section>
@@ -447,6 +746,14 @@
                     <h3> Web与软件系统开发</h3>
                     <p class="research-tag">Web · 移动 · 桌面</p>
                     <p>面向Web应用、后台程序、管理系统开发，开展软件项目设计、系统架构搭建，参与各类软件开发类竞赛。</p>
+                    <div class="research-stack">
+                        <span>HTML5</span><span>CSS3</span><span>JavaScript</span><span>React</span><span>Vue</span><span>Node.js</span>
+                    </div>
+                    <ul class="research-points">
+                        <li>响应式网站与企业管理系统</li>
+                        <li>前后端分离架构与 API 设计</li>
+                        <li>计算机设计大赛参赛作品</li>
+                    </ul>
                 </article>
                 <article class="research-card">
                     <div class="research-icon">
@@ -458,6 +765,14 @@
                     <h3>新媒体与数字媒体设计</h3>
                     <p class="research-tag">特效创作 · 平面视觉设计</p>
                     <p>平面设计、短视频剪辑、三维建模、新媒体产品创作，开展文创、宣传类数字作品研发。</p>
+                    <div class="research-stack">
+                        <span>Photoshop</span><span>Illustrator</span><span>Premiere</span><span>After Effects</span><span>Cinema 4D</span>
+                    </div>
+                    <ul class="research-points">
+                        <li>实验室宣传视频与文创设计</li>
+                        <li>数字媒体类参赛作品创作</li>
+                        <li>UI/UX 与品牌物料设计</li>
+                    </ul>
                 </article>
                 <article class="research-card">
                     <div class="research-icon">
@@ -469,6 +784,14 @@
                     <h3>电子商务与创新创业项目</h3>
                     <p class="research-tag">以赛促学</p>
                     <p>围绕电商模式设计、创业方案策划，开展三创赛等创新创业项目研发与落地实践。</p>
+                    <div class="research-stack">
+                        <span>商业模式</span><span>市场调研</span><span>方案策划</span><span>路演答辩</span><span>财务测算</span>
+                    </div>
+                    <ul class="research-points">
+                        <li>三创赛省级与国家级作品</li>
+                        <li>创新创业训练计划项目</li>
+                        <li>创业方案落地可行性分析</li>
+                    </ul>
                 </article>
                 <article class="research-card">
                     <div class="research-icon">
@@ -480,7 +803,43 @@
                     <h3>计算机应用与竞赛实践</h3>
                     <p class="research-tag">AI实践应用</p>
                     <p>结合AI、小程序、各类应用型小项目，开展学科竞赛项目研发，训练综合程序设计与项目实战能力。</p>
+                    <div class="research-stack">
+                        <span>Python</span><span>C/C++</span><span>AI模型</span><span>微信小程序</span><span>算法</span>
+                    </div>
+                    <ul class="research-points">
+                        <li>AI 挑战赛与算法竞赛</li>
+                        <li>蓝桥杯程序设计参赛</li>
+                        <li>小程序与轻量级应用研发</li>
+                    </ul>
                 </article>
+            </div>
+
+            <!-- 核心能力矩阵 -->
+            <div class="research-matrix">
+                <h3 class="about-block-title"><span class="about-block-num">// 03</span> 核心能力矩阵</h3>
+                <p class="about-block-desc">四大研究方向共同构成 LMK 实验室的能力底座，覆盖从产品构思到工程落地的完整链路。</p>
+                <div class="matrix-grid">
+                    <div class="matrix-cell">
+                        <div class="matrix-cell-num">01</div>
+                        <h4>工程实现</h4>
+                        <p>从需求拆解到代码落地，强调规范化开发、版本管理与协作流程。</p>
+                    </div>
+                    <div class="matrix-cell">
+                        <div class="matrix-cell-num">02</div>
+                        <h4>视觉表达</h4>
+                        <p>以视觉语言承载技术与品牌，让作品兼具功能性与审美体验。</p>
+                    </div>
+                    <div class="matrix-cell">
+                        <div class="matrix-cell-num">03</div>
+                        <h4>商业思维</h4>
+                        <p>从作品走向产品，在创新项目中训练方案策划与商业判断能力。</p>
+                    </div>
+                    <div class="matrix-cell">
+                        <div class="matrix-cell-num">04</div>
+                        <h4>算法素养</h4>
+                        <p>夯实程序设计与算法基础，培养解决实际问题的工程化思维。</p>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -567,11 +926,70 @@
                     <div><span class="badge badge-province">国家级</span></div>
                 </div>
             </div>
+
+            <!-- 重点赛事 -->
+            <div class="awards-featured">
+                <h3 class="about-block-title"><span class="about-block-num">// 04</span> 重点赛事</h3>
+                <p class="about-block-desc">实验室围绕以下核心赛事持续投入，形成稳定的备赛节奏与项目沉淀。</p>
+                <div class="featured-grid">
+                    <div class="featured-card">
+                        <div class="featured-tag">A 类</div>
+                        <h4>全国大学生电子商务"创新、创意及创业"挑战赛</h4>
+                        <p>教育部认可的重点学科竞赛之一，实验室连续多年参赛，曾获省级一等奖两项、二等奖多项。</p>
+                    </div>
+                    <div class="featured-card">
+                        <div class="featured-tag">A 类</div>
+                        <h4>中国大学生计算机设计大赛</h4>
+                        <p>覆盖软件开发、数字媒体等多个赛道，是实验室 Web 与数字媒体方向的核心参赛方向。</p>
+                    </div>
+                    <div class="featured-card">
+                        <div class="featured-tag">B 类</div>
+                        <h4>辽宁省"中软国际-卓越杯"AI 挑战赛</h4>
+                        <p>面向人工智能应用开发的省级赛事，曾凭借手写文字去除系统斩获省级一等奖。</p>
+                    </div>
+                    <div class="featured-card">
+                        <div class="featured-tag">B 类</div>
+                        <h4>蓝桥杯全国软件和信息技术专业人才大赛</h4>
+                        <p>检验个人程序设计与算法能力的全国性赛事，覆盖 C/C++、Java 等多个语言组别。</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 培养路径 -->
+            <div class="awards-path">
+                <h3 class="about-block-title"><span class="about-block-num">// 05</span> 竞赛培养路径</h3>
+                <p class="about-block-desc">从校赛到国赛，实验室为每一阶段提供清晰的备赛节奏与项目支持。</p>
+                <div class="path-track">
+                    <div class="path-step">
+                        <span class="path-num">01</span>
+                        <h4>校级选拔</h4>
+                        <p>校内项目立项与试讲，打磨选题与方案框架</p>
+                    </div>
+                    <div class="path-arrow">→</div>
+                    <div class="path-step">
+                        <span class="path-num">02</span>
+                        <h4>省级初赛</h4>
+                        <p>完善作品并提交材料，进行第一轮专家评审</p>
+                    </div>
+                    <div class="path-arrow">→</div>
+                    <div class="path-step">
+                        <span class="path-num">03</span>
+                        <h4>省级决赛</h4>
+                        <p>现场答辩与作品演示，冲击省级一等、二等奖</p>
+                    </div>
+                    <div class="path-arrow">→</div>
+                    <div class="path-step">
+                        <span class="path-num">04</span>
+                        <h4>国赛冲刺</h4>
+                        <p>代表省份进入全国决赛，与全国优秀作品同台竞技</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
     <!-- 实验室组别 -->
-    <section id="page-groups" class="page-section section section-dark" data-page="groups">
+    <section id="page-groups" class="page-section section section-tech-blue" data-page="groups">
         <div class="container">
             <div class="section-head">
                 <span class="section-num">04</span>
@@ -911,12 +1329,56 @@
                     </figcaption>
                 </figure>
             </div>
+
+            <!-- 组别协作流程 -->
+            <div class="groups-collab">
+                <h3 class="about-block-title"><span class="about-block-num">// 05</span> 组别协作</h3>
+                <p class="about-block-desc">五大组别并非独立运转，而是围绕真实项目进行跨组协作，共同完成从设计到上线的完整闭环。</p>
+                <div class="collab-flow">
+                    <div class="collab-step">
+                        <span class="collab-stage">需求阶段</span>
+                        <span class="collab-role">平面设计组 · 前端组</span>
+                        <p>视觉风格定调，输出原型与品牌物料</p>
+                    </div>
+                    <div class="collab-line"></div>
+                    <div class="collab-step">
+                        <span class="collab-stage">开发阶段</span>
+                        <span class="collab-role">前端组 · 后台组</span>
+                        <p>前后端并行开发，接口联调与功能实现</p>
+                    </div>
+                    <div class="collab-line"></div>
+                    <div class="collab-step">
+                        <span class="collab-stage">展示阶段</span>
+                        <span class="collab-role">多媒体组 · 3D建模组</span>
+                        <p>制作路演视频、产品演示与三维场景</p>
+                    </div>
+                </div>
+
+                <div class="collab-stats">
+                    <div class="collab-stat">
+                        <div class="collab-stat-num">5</div>
+                        <div class="collab-stat-label">协同组别</div>
+                    </div>
+                    <div class="collab-stat">
+                        <div class="collab-stat-num">20+</div>
+                        <div class="collab-stat-label">年度协作项目</div>
+                    </div>
+                    <div class="collab-stat">
+                        <div class="collab-stat-num">100%</div>
+                        <div class="collab-stat-label">跨组参与率</div>
+                    </div>
+                    <div class="collab-stat">
+                        <div class="collab-stat-num">1:1</div>
+                        <div class="collab-stat-label">新老成员配比</div>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
 
     <!-- 指导老师 -->
-    <section id="page-teachers" class="page-section section section-dark teachers-page" data-page="teachers">
+    <section id="page-teachers" class="page-section section section-tech-blue teachers-page" data-page="teachers">
         <div class="container">
             <div class="section-head">
                 <span class="section-num">05</span>
@@ -926,7 +1388,7 @@
 
             <div class="teachers-hud">
                 <span class="t-hud-item"><span class="t-hud-led"></span> LMK-MENTOR_LIST</span>
-                <span class="t-hud-item">RECORDS: 07</span>
+                <span class="t-hud-item">RECORDS: 01</span>
                 <span class="t-hud-item t-blink">// LOAD_OK</span>
             </div>
 
@@ -982,138 +1444,66 @@
                     </div>
                 </article>
 
-                <!-- 张老师 -->
-                <article class="teacher-card">
-                    <div class="t-card-frame"><span class="t-f-c tl"></span><span class="t-f-c tr"></span><span class="t-f-c bl"></span><span class="t-f-c br"></span></div>
-                    <div class="teacher-id-tag">MENTOR_ID: M-002</div>
-
-                    <header class="teacher-head">
-                        <div class="teacher-avatar t-avatar-zhang">
-                            <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                                <circle cx="50" cy="38" r="14"/>
-                                <path d="M20 88c6-20 20-30 30-30s24 10 30 30"/>
-                                <path d="M36 28l2 4 4-2 4 2 2-4 2 4"/>
-                                <path d="M30 40c4-4 16-4 20 0"/>
-                            </svg>
-                            <span class="t-rank">MENTOR</span>
-                        </div>
-                        <div class="teacher-title">
-                            <h3>张奇</h3>
-                            <span class="teacher-role">实验室常驻指导教师</span>
-                            <div class="teacher-tags">
-                                <span>日常管理</span><span>项目开发</span><span>竞赛备赛</span><span>大创申报</span><span>系统编码</span>
-                            </div>
-                        </div>
-                    </header>
-
-                    <div class="teacher-meta">
-                        <div class="t-meta-row"><span class="t-meta-k">职称</span><span class="t-meta-v">讲师</span></div>
-                        <div class="t-meta-row"><span class="t-meta-k">所属</span><span class="t-meta-v">信息工程学院 / LMK实验室</span></div>
-                        <div class="t-meta-row"><span class="t-meta-k">职责</span><span class="t-meta-v">日常管理 · 项目开发 · 竞赛备赛</span></div>
-                        <div class="t-meta-row"><span class="t-meta-k">方向</span><span class="t-meta-v">系统编码与作品打磨 · 大创立项</span></div>
-                    </div>
-
-                    <div class="teacher-desc">
-                        <p>
-                            张奇老师是 LMK 实验室的常驻指导教师，承担实验室日常管理、学生项目开发、
-                            竞赛备赛以及大创项目申报等一线工作。从需求梳理、架构设计到代码评审、
-                            测试部署，张老师亲自指导学生完成系统编码与作品打磨，按工业标准带学生走完项目全流程。
-                        </p>
-                        <p>
-                            张老师与赵丽霞老师密切配合，分工负责学生项目管理、代码开发、竞赛备赛
-                            与大创立项申报，确保实验室每一个项目从立项到结题都有专人盯守、持续迭代。
-                        </p>
-                        <div class="teacher-quote">
-                            <span class="quote-mark">"</span>
-                            <p>技术是骨，协作是魂。学会写代码只是开始，学会和一群人把一件事做好，
-                            才是你在这里要真正掌握的能力。</p>
-                        </div>
-                    </div>
-                </article>
             </div>
 
-            <!-- 竞赛项目指导教师分隔 -->
-            <div class="teachers-divider">
-                <span class="td-line"></span>
-                <h3 class="td-title">竞赛项目指导教师</h3>
-                <span class="td-line"></span>
+            <!-- 教学成果统计 -->
+            <div class="teacher-impact">
+                <h3 class="about-block-title"><span class="about-block-num">// 06</span> 教学成果</h3>
+                <p class="about-block-desc">十余年一线教学与实验室带队积累，沉淀为可量化的培养成果。</p>
+                <div class="impact-grid">
+                    <div class="impact-cell">
+                        <div class="impact-num">100<span>+</span></div>
+                        <div class="impact-label">培养学员</div>
+                        <p>累计培养百余名优秀学生，覆盖信息工程学院多个专业方向。</p>
+                    </div>
+                    <div class="impact-cell">
+                        <div class="impact-num">200<span>+</span></div>
+                        <div class="impact-label">指导奖项</div>
+                        <p>涵盖国家级、省级、校级奖项，覆盖十余项主流学科竞赛。</p>
+                    </div>
+                    <div class="impact-cell">
+                        <div class="impact-num">1<span></span></div>
+                        <div class="impact-label">国家级一流课程</div>
+                        <p>《网页设计基础》负责人，课程建设与实验室实战深度联动。</p>
+                    </div>
+                    <div class="impact-cell">
+                        <div class="impact-num">10<span>+</span></div>
+                        <div class="impact-label">带队赛事</div>
+                        <p>三创赛、计设大赛、AI 挑战赛、蓝桥杯等多赛道持续投入。</p>
+                    </div>
+                </div>
             </div>
 
-            <div class="teachers-grid-sm">
-                <article class="teacher-card-sm">
-                    <div class="t-sm-frame"><span class="t-f-c tl"></span><span class="t-f-c br"></span></div>
-                    <div class="teacher-head-sm">
-                        <div class="teacher-avatar-sm t-avatar-li">李</div>
-                        <div class="teacher-title-sm">
-                            <h4>李昊凌</h4>
-                            <span class="teacher-role-sm">竞赛项目指导教师</span>
+            <!-- 学生寄语 -->
+            <div class="teacher-voices">
+                <h3 class="about-block-title"><span class="about-block-num">// 07</span> 学长学姐说</h3>
+                <p class="about-block-desc">从实验室走向更远的地方，他们留下的经验，是后来者最珍贵的路标。</p>
+                <div class="voices-grid">
+                    <div class="voice-card">
+                        <div class="voice-quote">"</div>
+                        <p>实验室三年的项目实战，让我在面试时能拿得出真正可讲的作品。课堂上学的是知识点，实验室学到的是怎么把知识点串成一个完整的系统。</p>
+                        <div class="voice-author">
+                            <span class="voice-name">—— 历届成员</span>
+                            <span class="voice-role">前端方向 · 已就业</span>
                         </div>
                     </div>
-                    <div class="teacher-tags">
-                        <span>计设大赛</span><span>Web方向</span>
-                    </div>
-                    <p class="teacher-desc-sm">负责计算机设计大赛 Web 方向项目的指导工作。</p>
-                </article>
-
-                <article class="teacher-card-sm">
-                    <div class="t-sm-frame"><span class="t-f-c tl"></span><span class="t-f-c br"></span></div>
-                    <div class="teacher-head-sm">
-                        <div class="teacher-avatar-sm t-avatar-wang">王</div>
-                        <div class="teacher-title-sm">
-                            <h4>王丹</h4>
-                            <span class="teacher-role-sm">竞赛项目指导教师</span>
+                    <div class="voice-card">
+                        <div class="voice-quote">"</div>
+                        <p>从第一次路演紧张到说不出话，到能在答辩现场自如应对评委提问，实验室给了我最直接的成长舞台。</p>
+                        <div class="voice-author">
+                            <span class="voice-name">—— 历届成员</span>
+                            <span class="voice-role">三创赛方向 · 继续深造</span>
                         </div>
                     </div>
-                    <div class="teacher-tags">
-                        <span>辽宁省AI挑战赛</span><span>AI类项目</span>
-                    </div>
-                    <p class="teacher-desc-sm">负责辽宁省 AI 挑战赛相关 AI 类项目的指导工作。</p>
-                </article>
-
-                <article class="teacher-card-sm">
-                    <div class="t-sm-frame"><span class="t-f-c tl"></span><span class="t-f-c br"></span></div>
-                    <div class="teacher-head-sm">
-                        <div class="teacher-avatar-sm t-avatar-bai">白</div>
-                        <div class="teacher-title-sm">
-                            <h4>白鹤</h4>
-                            <span class="teacher-role-sm">竞赛项目指导教师</span>
+                    <div class="voice-card">
+                        <div class="voice-quote">"</div>
+                        <p>赵老师带项目的方式很特别，她不会告诉你答案，而是让你自己撞墙、复盘、再试一次。这种思维方式到现在还在影响我。</p>
+                        <div class="voice-author">
+                            <span class="voice-name">—— 历届成员</span>
+                            <span class="voice-role">数字媒体方向 · 已就业</span>
                         </div>
                     </div>
-                    <div class="teacher-tags">
-                        <span>辽宁省AI挑战赛</span><span>AI类项目</span>
-                    </div>
-                    <p class="teacher-desc-sm">负责辽宁省 AI 挑战赛相关 AI 类项目的指导工作。</p>
-                </article>
-
-                <article class="teacher-card-sm">
-                    <div class="t-sm-frame"><span class="t-f-c tl"></span><span class="t-f-c br"></span></div>
-                    <div class="teacher-head-sm">
-                        <div class="teacher-avatar-sm t-avatar-yan">闫</div>
-                        <div class="teacher-title-sm">
-                            <h4>闫海龙</h4>
-                            <span class="teacher-role-sm">竞赛项目指导教师</span>
-                        </div>
-                    </div>
-                    <div class="teacher-tags">
-                        <span>互联网+</span><span>发现杯</span>
-                    </div>
-                    <p class="teacher-desc-sm">负责互联网+、发现杯项目的指导工作。</p>
-                </article>
-
-                <article class="teacher-card-sm">
-                    <div class="t-sm-frame"><span class="t-f-c tl"></span><span class="t-f-c br"></span></div>
-                    <div class="teacher-head-sm">
-                        <div class="teacher-avatar-sm t-avatar-shen">沈</div>
-                        <div class="teacher-title-sm">
-                            <h4>沈晓洁</h4>
-                            <span class="teacher-role-sm">竞赛项目指导教师</span>
-                        </div>
-                    </div>
-                    <div class="teacher-tags">
-                        <span>互联网+</span><span>发现杯</span>
-                    </div>
-                    <p class="teacher-desc-sm">负责互联网+、发现杯项目的指导工作。</p>
-                </article>
+                </div>
             </div>
         </div>
     </section>
@@ -1188,7 +1578,7 @@
                             </li>
                             <li>
                                 <span class="contact-label">电话</span>
-                                <span>----------</spanspan>
+                                <span>----------</span>
                             </li>
                             <li>
                                 <span class="contact-label">VX群</span>
@@ -1267,48 +1657,98 @@
                     <p class="form-note">提交后请保持联系方式畅通，我们将在3个工作日内联系您</p>
                 </form>
             </div>
+
+            <!-- 成长路径 -->
+            <div class="join-growth">
+                <h3 class="about-block-title"><span class="about-block-num">// 07</span> 成长路径</h3>
+                <p class="about-block-desc">从加入到独立带队，每一步都有清晰的能力跃迁目标与导师陪伴。</p>
+                <div class="growth-track">
+                    <div class="growth-stage">
+                        <div class="growth-head">
+                            <span class="growth-tag">大一</span>
+                            <h4>入门探索</h4>
+                        </div>
+                        <ul>
+                            <li>掌握基础开发工具与协作流程</li>
+                            <li>跟随学长学姐参与小型项目</li>
+                            <li>确定主攻方向并完成入门作品</li>
+                        </ul>
+                    </div>
+                    <div class="growth-stage">
+                        <div class="growth-head">
+                            <span class="growth-tag">大二</span>
+                            <h4>实战积累</h4>
+                        </div>
+                        <ul>
+                            <li>独立承担项目模块开发</li>
+                            <li>首次参与学科竞赛并完成作品</li>
+                            <li>开始带教低年级新成员</li>
+                        </ul>
+                    </div>
+                    <div class="growth-stage">
+                        <div class="growth-head">
+                            <span class="growth-tag">大三</span>
+                            <h4>项目主导</h4>
+                        </div>
+                        <ul>
+                            <li>主导参赛项目与产品方案</li>
+                            <li>承担组别内的代码 Review 与方案评审</li>
+                            <li>对接外部需求，输出完整作品</li>
+                        </ul>
+                    </div>
+                    <div class="growth-stage">
+                        <div class="growth-head">
+                            <span class="growth-tag">大四</span>
+                            <h4>传承交接</h4>
+                        </div>
+                        <ul>
+                            <li>沉淀项目文档与经验复盘</li>
+                            <li>指导新成员完成项目交接</li>
+                            <li>为就业或深造准备作品集</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 招新FAQ -->
+            <div class="join-faq">
+                <h3 class="about-block-title"><span class="about-block-num">// 08</span> 招新常见问题</h3>
+                <p class="about-block-desc">在申请之前，你可能想知道这些。</p>
+                <div class="faq-list">
+                    <div class="faq-item">
+                        <div class="faq-q">
+                            <span class="faq-q-mark">Q1</span>
+                            <h4>没有技术基础可以申请吗？</h4>
+                        </div>
+                        <p>可以。我们更看重学习意愿和坚持，加入后会有系统的入门引导与学长学姐带教。比起已有基础，我们更在意你是否愿意动手并持续投入。</p>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-q">
+                            <span class="faq-q-mark">Q2</span>
+                            <h4>需要每天到实验室吗？</h4>
+                        </div>
+                        <p>实验室教学时间为每日 18:50 - 20:50，鼓励成员尽量到线下，但也理解课业冲突。重要的是按时完成阶段任务，并通过线上同步进度。</p>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-q">
+                            <span class="faq-q-mark">Q3</span>
+                            <h4>非信息工程学院的学生可以加入吗？</h4>
+                        </div>
+                        <p>目前招新主要面向信息工程学院在校本科生。如有特殊跨专业合作需求，可线下沟通确认。</p>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-q">
+                            <span class="faq-q-mark">Q4</span>
+                            <h4>加入后能参加哪些竞赛？</h4>
+                        </div>
+                        <p>包括但不限于全国大学生电子商务三创赛、中国大学生计算机设计大赛、AI 挑战赛、蓝桥杯、大学生创新创业训练计划等。</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
     
-<!-- 页脚 -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-grid">
-                <div class="footer-brand">
-                    <div class="brand">
-                        <div class="brand-mark">LMK</div>
-                        <div class="brand-text">
-                            <span class="brand-name">LMK 实验室</span>
-                            <span class="brand-sub">Liaoning Institute of Technology</span>
-                        </div>
-                    </div>
-                    <p class="footer-desc">
-                        辽宁理工学院信息工程学院学生科技创新平台，
-                        以项目驱动学习，以竞赛检验成果。
-                    </p>
-                </div>
-
-
-                <div class="footer-col">
-                    <h4>实验室组别</h4>
-                    <ul>
-                        <li><a href="?page=groups">前端组</a></li>
-                        <li><a href="?page=groups">后台组</a></li>
-                        <li><a href="?page=groups">多媒体组</a></li>
-                        <li><a href="?page=groups">平面设计组</a></li>
-                        <li><a href="?page=groups">3D建模组</a></li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="footer-bottom">
-                <p>© 2026 LMK实验室 · 辽宁理工学院信息工程学院</p>
-                <p class="footer-icp">建议使用 Chrome / Edge / Firefox 浏览器访问</p>
-            </div>
-        </div>
-    </footer>
-
     <!-- ===== 移动端专用底部科技风跳转导航栏 ===== -->
     <nav class="mobi-nav" aria-label="移动端页面跳转">
         <div class="mobi-nav-frame" aria-hidden="true">
@@ -1389,6 +1829,48 @@
             <path d="M12 19V5M5 12l7-7 7 7"/>
         </svg>
     </button>
+
+            </main><!-- /.page-main -->
+    </div><!-- /.page-row -->
+    </div><!-- /.page-layout -->
+
+<!-- 页脚（横向铺满，与顶部公告栏一致） -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div class="brand">
+                        <div class="brand-mark">LMK</div>
+                        <div class="brand-text">
+                            <span class="brand-name">LMK 实验室</span>
+                            <span class="brand-sub">Liaoning Institute of Technology</span>
+                        </div>
+                    </div>
+                    <p class="footer-desc">
+                        辽宁理工学院信息工程学院学生科技创新平台，
+                        以项目驱动学习，以竞赛检验成果。
+                    </p>
+                </div>
+
+
+                <div class="footer-col">
+                    <h4>实验室组别</h4>
+                    <ul>
+                        <li><a href="?page=groups">前端组</a></li>
+                        <li><a href="?page=groups">后台组</a></li>
+                        <li><a href="?page=groups">多媒体组</a></li>
+                        <li><a href="?page=groups">平面设计组</a></li>
+                        <li><a href="?page=groups">3D建模组</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>© 2026 LMK实验室 · 辽宁理工学院信息工程学院</p>
+                <p class="footer-icp">建议使用 Chrome / Edge / Firefox 浏览器访问</p>
+            </div>
+        </div>
+    </footer>
 
     </div><!-- /#frontApp -->
 

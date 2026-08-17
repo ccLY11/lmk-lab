@@ -409,13 +409,18 @@
     // ===== Hash 路由 =====
     function applyRoute() {
         const isAdmin = window.location.hash === '#admin';
+        const sideNav = $('sideNavBar');
         if (isAdmin) {
             frontApp.style.display = 'none';
             adminApp.style.display = 'block';
+            if (sideNav) sideNav.style.display = 'none';
+            document.body.style.background = '#0a1428';
             checkLogin();
         } else {
             frontApp.style.display = 'block';
             adminApp.style.display = 'none';
+            if (sideNav) sideNav.style.display = 'flex';
+            document.body.style.background = '';
             stopRealtime();
         }
     }

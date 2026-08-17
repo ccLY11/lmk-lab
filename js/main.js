@@ -262,7 +262,7 @@
 })();
 
 // ===== 导航栏滚动效果 =====
-const header = document.getElementById('header');
+const sideNavBar = document.getElementById('sideNavBar');
 const backTop = document.getElementById('backTop');
 const navLinks = document.querySelectorAll('.nav-link');
 const sections = document.querySelectorAll('section[id]');
@@ -270,18 +270,13 @@ const sections = document.querySelectorAll('section[id]');
 function handleScroll() {
     const scrollY = window.scrollY;
 
-    // 导航栏阴影
-    if (scrollY > 8) {
-        header.classList.add('scrolled');
-    } else {
-        header.classList.remove('scrolled');
-    }
-
     // 返回顶部按钮
-    if (scrollY > 400) {
-        backTop.classList.add('visible');
-    } else {
-        backTop.classList.remove('visible');
+    if (backTop) {
+        if (scrollY > 400) {
+            backTop.classList.add('visible');
+        } else {
+            backTop.classList.remove('visible');
+        }
     }
 
     // 当前 section 高亮
@@ -305,20 +300,34 @@ function handleScroll() {
 
 window.addEventListener('scroll', handleScroll, { passive: true });
 
-// ===== 移动端菜单 =====
+// ===== 移动端侧边栏抽屉 =====
 const navToggle = document.getElementById('navToggle');
-const navMenu = document.getElementById('navMenu');
+const sideNav = document.getElementById('sideNavBar');
+const overlay = document.getElementById('snbOverlay');
 
-if (navToggle) {
-    navToggle.addEventListener('click', () => {
-        navToggle.classList.toggle('active');
-        navMenu.classList.toggle('active');
+function toggleSideNav(show) {
+    if (!sideNav || !navToggle) return;
+    const shouldShow = show !== undefined ? show : !sideNav.classList.contains('active');
+    sideNav.classList.toggle('active', shouldShow);
+    navToggle.classList.toggle('active', shouldShow);
+    if (overlay) overlay.classList.toggle('active', shouldShow);
+}
+
+if (navToggle && sideNav) {
+    navToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleSideNav();
     });
+
+    if (overlay) {
+        overlay.addEventListener('click', () => toggleSideNav(false));
+    }
 
     navLinks.forEach(link => {
         link.addEventListener('click', () => {
-            navToggle.classList.remove('active');
-            navMenu.classList.remove('active');
+            if (window.innerWidth <= 768) {
+                toggleSideNav(false);
+            }
         });
     });
 }
@@ -767,13 +776,13 @@ function initMouseInteractions() {
         setTimeout(() => ripple.remove(), 800);
     });
 
-    // 8. 导航栏扫描线效果
-    const navBar = document.querySelector('.nav');
-    if (navBar) {
-        navBar.addEventListener('mousemove', (e) => {
-            const rect = navBar.getBoundingClientRect();
+    // 8. 侧边栏扫描线效果
+    const sideMenu = document.querySelector('.snb-menu');
+    if (sideMenu) {
+        sideMenu.addEventListener('mousemove', (e) => {
+            const rect = sideMenu.getBoundingClientRect();
             const x = e.clientX - rect.left;
-            navBar.style.setProperty('--scan-x', x + 'px');
+            sideMenu.style.setProperty('--scan-x', x + 'px');
         });
     }
 
@@ -1946,12 +1955,11 @@ function initPageRouter() {
                 e.preventDefault();
                 const p = (m[1] || '').toLowerCase();
                 showPage(PAGE_IDS.includes(p) ? p : DEFAULT_PAGE, true);
-                // 关闭移动端菜单
+                // 关闭移动端侧边栏
                 try {
-                    const nt = document.getElementById('navToggle');
-                    const nm = document.getElementById('navMenu');
-                    if (nt) nt.classList.remove('active');
-                    if (nm) nm.classList.remove('active');
+                    if (window.innerWidth <= 768) {
+                        toggleSideNav(false);
+                    }
                 } catch(_) {}
             });
         });
