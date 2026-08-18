@@ -2216,8 +2216,6 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
         grid-column: span 1;
         grid-row: span 1;
     }
-    /* 移动端简化组别动画：隐藏复杂粒子/数据流，保留简洁渐变底 */
-    .group-anim { display: none; }
 
     .form-row {
         grid-template-columns: 1fr;
@@ -8736,6 +8734,281 @@ body { perspective: none; }
 
     .home-cta-inner {
         padding: 20px 16px;
+    }
+}
+
+/* ===================================================================
+   组别页面卡片 - 手机端适配
+   =================================================================== */
+
+/* 组别卡片：手机端给足高度，让内部动画有空间显示 */
+@media (max-width: 768px) {
+    #page-groups .gallery {
+        grid-auto-rows: 220px;
+        gap: 12px;
+    }
+
+    /* 前端组 - 浏览器窗口缩小适配 */
+    .anim-frontend .browser-window {
+        inset: 8px;
+        border-radius: 5px;
+    }
+    .anim-frontend .browser-tabs {
+        height: 18px;
+        padding: 0 6px;
+        gap: 3px;
+    }
+    .anim-frontend .browser-tabs .tab {
+        height: 13px;
+        min-width: 50px;
+        max-width: 80px;
+        font-size: 6px;
+        padding: 0 5px 0 4px;
+        gap: 3px;
+    }
+    .anim-frontend .browser-bar {
+        height: 24px;
+        padding: 0 6px;
+        gap: 4px;
+    }
+    .anim-frontend .nav-btn,
+    .anim-frontend .menu-btn {
+        width: 12px;
+        height: 12px;
+        font-size: 6px;
+    }
+    .anim-frontend .address-bar {
+        height: 16px;
+        font-size: 5.5px;
+        padding: 0 5px;
+        letter-spacing: 0;
+    }
+    .anim-frontend .browser-page {
+        padding: 5px 6px 6px;
+        gap: 4px;
+    }
+    .anim-frontend .page-nav {
+        height: 18px;
+        padding: 0 6px;
+        border-radius: 3px;
+    }
+    .anim-frontend .logo-box {
+        width: 20px;
+        height: 10px;
+        font-size: 5px;
+    }
+    .anim-frontend .nav-links {
+        gap: 6px;
+        font-size: 5px;
+    }
+    .anim-frontend .nl-btn {
+        padding: 1px 4px;
+        font-size: 5px;
+    }
+    .anim-frontend .terminal-bar {
+        height: 16px;
+        padding: 0 6px;
+        gap: 3px;
+    }
+    .anim-frontend .tb-dot {
+        width: 7px;
+        height: 7px;
+    }
+    .anim-frontend .tb-title {
+        font-size: 5px;
+        letter-spacing: 0;
+    }
+    .anim-frontend .terminal-body {
+        padding: 5px 6px;
+        gap: 2px;
+    }
+    .anim-frontend .term-line {
+        font-size: 5.5px;
+        line-height: 1.4;
+    }
+    .anim-frontend .term-cursor {
+        width: 5px;
+    }
+    /* 前端组：4个代码卡片缩成一行 */
+    .anim-frontend .page-grid {
+        display: none;
+    }
+
+    /* 后台组 - 适配 */
+    .anim-backend .server-top-bar {
+        height: 16px;
+        padding: 0 6px;
+        font-size: 5.5px;
+    }
+    .anim-backend .backend-diagram {
+        transform: scale(0.7);
+        transform-origin: center center;
+        margin-top: -10px;
+    }
+    .anim-backend .sql-ticker {
+        height: 16px;
+        padding: 0 6px;
+        font-size: 5.5px;
+    }
+
+    /* 多媒体组 - 适配 */
+    .anim-multimedia .video-preview {
+        height: 55%;
+    }
+    .anim-multimedia .vp-frame {
+        border-radius: 4px;
+    }
+    .anim-multimedia .vp-text {
+        font-size: 10px;
+        letter-spacing: 1px;
+    }
+    .anim-multimedia .vp-controls {
+        height: 18px;
+        padding: 0 6px;
+        font-size: 5.5px;
+        gap: 4px;
+    }
+    .anim-multimedia .timeline-area {
+        padding: 3px 6px 4px;
+        gap: 2px;
+    }
+    .anim-multimedia .tl-ruler span {
+        font-size: 4.5px;
+    }
+    .anim-multimedia .tl-track {
+        height: 12px;
+        font-size: 5px;
+    }
+    .anim-multimedia .tl-label {
+        width: 14px;
+        font-size: 4.5px;
+    }
+    .anim-multimedia .clip span {
+        font-size: 5px;
+    }
+
+    /* 平面设计组 - 适配 */
+    .anim-graphic .ds-toolbar {
+        width: 22px;
+        padding: 4px 2px;
+        gap: 2px;
+    }
+    .anim-graphic .ds-tl-item {
+        width: 14px;
+        height: 14px;
+        font-size: 7px;
+    }
+    .anim-graphic .ds-canvas-area {
+        padding: 4px;
+    }
+    .anim-graphic .ds-right-panel {
+        width: 48px;
+        padding: 4px;
+        gap: 4px;
+    }
+    .anim-graphic .ds-ly-title {
+        font-size: 5.5px;
+        padding-bottom: 2px;
+    }
+    .anim-graphic .ds-ly-item {
+        font-size: 5px;
+        padding: 1px 2px;
+        gap: 2px;
+    }
+    .anim-graphic .ds-colors {
+        gap: 2px;
+    }
+    .anim-graphic .ds-color-item {
+        width: 10px;
+        height: 10px;
+    }
+
+    /* 3D组 - 适配 */
+    .anim-3d .d3-top-bar {
+        height: 14px;
+        padding: 0 6px;
+        font-size: 5px;
+    }
+    .anim-3d .d3-viewport {
+        height: calc(100% - 14px);
+    }
+} /* end @media (max-width: 768px) — group mobile */
+
+/* 组别卡片：统一的"点击查看详情"提示，全端生效
+   用 ::after（比 ::before 好——::before 被 gradient-border 动画占用且带 !important）*/
+.gallery-item[data-group]::after {
+    content: '点击查看详情 →';
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    left: auto;
+    height: auto;
+    z-index: 6;
+    font-size: 11px;
+    font-weight: 500;
+    font-family: var(--font-mono);
+    letter-spacing: 0.02em;
+    line-height: 1;
+    color: rgba(186, 230, 253, 0.88);
+    background: rgba(15, 30, 60, 0.55);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    border-radius: 12px;
+    padding: 5px 12px;
+    pointer-events: none;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    white-space: nowrap;
+    opacity: 0;
+    transform: translateY(-4px);
+    transition: opacity 0.35s ease, transform 0.35s ease;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.35);
+    animation: none;
+}
+.gallery-item[data-group]:hover::after {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* 移动端：无 hover，提示默认显示但更克制 */
+@media (max-width: 768px) {
+    .gallery-item[data-group]::after {
+        font-size: 9.5px;
+        padding: 4px 10px;
+        border-radius: 10px;
+        top: 8px;
+        right: 8px;
+        opacity: 0.9;
+        transform: none;
+        background: rgba(15, 30, 60, 0.48);
+    }
+}
+
+/* 小屏手机进一步适配 */
+@media (max-width: 480px) {
+    #page-groups .gallery {
+        grid-auto-rows: 200px;
+        gap: 10px;
+    }
+    .anim-frontend .browser-tabs .tab {
+        min-width: 42px;
+        max-width: 65px;
+        font-size: 5px;
+    }
+    .anim-frontend .address-bar {
+        font-size: 5px;
+    }
+    .anim-frontend .term-line {
+        font-size: 5px;
+    }
+    .anim-backend .backend-diagram {
+        transform: scale(0.6);
+    }
+    .gallery-item[data-group]::after {
+        font-size: 9px;
+        padding: 3px 8px;
+        border-radius: 9px;
+        top: 6px;
+        right: 6px;
     }
 }
 
