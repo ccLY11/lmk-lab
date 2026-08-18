@@ -1809,6 +1809,57 @@ function initPageRouter() {
             if (dp === page) l.classList.add('is-active');
             else l.classList.remove('is-active');
         });
+        // 手机端：仅首页显示 Hero，其他页面隐藏
+        // 保险方案：class + inline style
+        // ——关键：回到首页时用 removeAttribute('style') 彻底清空，
+        //   否则残留的 minHeight/background/boxShadow/border 会导致 hero 变形/重叠
+        try {
+            const hero = document.getElementById('home');
+            const isMobile = window.matchMedia && window.matchMedia('(max-width: 768px)').matches;
+            if (hero) {
+                if (page === DEFAULT_PAGE) {
+                    hero.classList.remove('is-hidden-mobile');
+                    if (isMobile) {
+                        // ★ 用 removeAttribute 一次清空所有 inline style，
+                        //   避免一个个清除时漏掉 minHeight/background 等导致画面错乱
+                        hero.removeAttribute('style');
+                    }
+                } else {
+                    hero.classList.add('is-hidden-mobile');
+                    if (isMobile) {
+                        hero.style.display = 'none';
+                        hero.style.height = '0px';
+                        hero.style.minHeight = '0px';
+                        hero.style.margin = '0';
+                        hero.style.padding = '0';
+                        hero.style.visibility = 'hidden';
+                        hero.style.overflow = 'hidden';
+                        hero.style.boxShadow = 'none';
+                        hero.style.background = 'none';
+                        hero.style.border = '0';
+                        hero.style.position = 'absolute';
+                        hero.style.top = '-99999px';
+                        hero.style.left = '-99999px';
+                        hero.style.width = '0';
+                        hero.style.maxHeight = '0px';
+                    }
+                }
+            }
+            // 非首页移动端：hero 隐藏后给第一个当前显示的 page-section 加顶距
+            // 回到首页后清理 section 上残留的 paddingTop inline style
+            if (page !== DEFAULT_PAGE && isMobile) {
+                const firstSec = document.querySelector('.page-section.page-visible, .page-section:first-of-type');
+                if (firstSec) {
+                    firstSec.style.paddingTop = window.matchMedia('(max-width: 480px)').matches ? '36px' : '48px';
+                }
+            } else if (page === DEFAULT_PAGE) {
+                // 清理所有 page-section 上残留的 paddingTop，避免回到首页后再切去别的页面时
+                // 旧元素仍被污染
+                document.querySelectorAll('.page-section').forEach(sec => {
+                    if (sec.style.paddingTop) sec.style.paddingTop = '';
+                });
+            }
+        } catch(_) {}
     }
 
     // 创建或获取过渡遮罩

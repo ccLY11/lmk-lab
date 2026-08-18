@@ -9241,3 +9241,31 @@ body { perspective: none; }
     .back-top { right: 12px; bottom: calc(20px + 100px); width: 36px; height: 36px; font-size: 13px; }
 }
 
+/* ===================================================================
+   手机端：非首页时隐藏 Hero 区
+   JS 在 setActiveNav 中给 #home 切换 class + inline style（双保险）
+   =================================================================== */
+@media (max-width: 768px) {
+    #home.is-hidden-mobile,
+    section#home.is-hidden-mobile {
+        display: none !important;
+        visibility: hidden !important;
+        height: 0 !important;
+        min-height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+        border: 0 !important;
+        background: none !important;
+        box-shadow: none !important;
+    }
+    #home.is-hidden-mobile > * {
+        display: none !important;
+    }
+}
+
+/* 小屏下 section 顶距已经由 JS inline style 直接设置，不需要 CSS :has() */
+@media (max-width: 480px) {
+    /* section 顶距通过 JS 直接写 style，避免 :has() 在部分浏览器不支持 */
+}
+
