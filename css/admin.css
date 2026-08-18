@@ -886,12 +886,71 @@ ul { list-style: none; }
     .sidebar { width: 200px; }
 }
 @media (max-width: 768px) {
-    .sidebar { display: none; }
-    .stats-grid { grid-template-columns: 1fr 1fr; }
-    .main-content { padding: 16px; }
-    .toolbar { flex-direction: column; align-items: stretch; }
+    /* 后台整体改纵向布局，sidebar 不再隐藏，置于顶部横向排列 */
+    .admin-body { flex-direction: column; }
+    .sidebar {
+        width: 100%;
+        max-height: none;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        padding: 10px 12px;
+    }
+    .side-nav {
+        display: flex;
+        gap: 6px;
+        padding: 0;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    .side-link {
+        flex-shrink: 0;
+        white-space: nowrap;
+        padding: 7px 12px;
+    }
+    .side-section { padding: 8px 0 0; }
+    .side-section + .side-section { border-top: 1px solid var(--border); margin-top: 8px; padding-top: 8px; }
+    .side-tags { flex-wrap: wrap; }
+    .side-footer { padding: 8px 0 0; }
+
+    /* 头部紧凑化 */
+    .admin-header { padding: 10px 14px; flex-wrap: wrap; gap: 8px; }
+    .header-title { font-size: 14px; }
+    .header-right { gap: 8px; flex-wrap: wrap; }
+    .live-status, .last-update { font-size: 11px; }
+    .new-badge { padding: 2px 8px; font-size: 11px; }
+
+    /* 内容区适配 */
+    .stats-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+    .main-content { padding: 14px; }
+    .stat-card { padding: 12px 14px; }
+    .stat-num { font-size: 22px; }
+    .toolbar { flex-direction: column; align-items: stretch; gap: 8px; }
     .search-box { max-width: none; }
 }
+
+/* 小屏手机（< 480px）后台适配 */
+@media (max-width: 480px) {
+    .admin-header { padding: 8px 10px; }
+    .header-left { gap: 8px; }
+    .brand-mark.small { width: 28px; height: 28px; font-size: 10px; }
+    .header-title { font-size: 13px; }
+    .header-right { gap: 6px; }
+    .live-status .live-dot { width: 6px; height: 6px; }
+    .last-update svg { width: 13px; height: 13px; }
+    .btn-ghost { padding: 6px; }
+    .btn-ghost svg { width: 14px; height: 14px; }
+
+    .stats-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+    .stat-card { padding: 10px 12px; border-radius: 6px; }
+    .stat-num { font-size: 18px; }
+    .stat-label { font-size: 11px; }
+
+    .main-content { padding: 10px; }
+    .side-link { padding: 6px 10px; font-size: 12px; }
+    .side-title { font-size: 11px; }
+    .btn-action { padding: 7px 10px; font-size: 12px; }
+}
+
 
 /* ===== 短信通知模块 ===== */
 .sms-status-row {

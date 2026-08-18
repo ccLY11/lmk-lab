@@ -2117,9 +2117,27 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
         padding: 48px 0 40px;
     }
     .hero-title {
-        font-size: 32px;
-        min-width: 390px;
+        font-size: 28px;
+        min-width: auto;
     }
+    .typewriter-loop-text {
+        min-width: auto;
+        white-space: normal;
+        display: inline;
+        vertical-align: baseline;
+    }
+    .hero-card-body {
+        padding: 18px 16px;
+        font-size: 11.5px;
+        line-height: 1.6;
+        white-space: pre-wrap;
+        word-break: break-all;
+        overflow-x: auto;
+    }
+    .hero-stat-num { font-size: 30px; }
+    .section-title { font-size: 22px; }
+    .top-bar-inner { flex-wrap: nowrap; }
+    .top-bar-link { white-space: nowrap; }
     .hero-stats {
         grid-template-columns: repeat(2, 1fr);
         gap: 24px;
@@ -2127,13 +2145,13 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
     }
 
     .section {
-        padding: 64px 0;
+        padding: 48px 0;
     }
     .section-head {
-        margin-bottom: 40px;
+        margin-bottom: 32px;
     }
     .section-title {
-        font-size: 26px;
+        font-size: 24px;
     }
     .section-desc {
         margin-left: 0;
@@ -2149,23 +2167,47 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
     }
     .awards-summary {
         grid-template-columns: 1fr;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+    .award-summary-item {
+        padding: 20px 16px;
+    }
+    /* 奖项表格改为卡片式，适配手机阅读 */
+    .awards-row-head { display: none; }
+    .awards-table {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
     }
     .awards-row {
-        grid-template-columns: 60px 1fr 70px;
-        gap: 8px;
-        padding: 12px 16px;
-        font-size: 13px;
+        display: block;
+        padding: 14px 16px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, rgba(30,41,70,0.6), rgba(15,23,42,0.85));
+        border: 1px solid rgba(59,130,246,0.15);
+        transition: border-color 0.2s;
     }
-    .awards-row > div:nth-child(4),
-    .awards-row > div:nth-child(5) {
-        grid-column: 2 / -1;
-        font-size: 12px;
+    .awards-row:not(.awards-row-head):hover {
+        background: linear-gradient(135deg, rgba(40,55,90,0.7), rgba(20,30,55,0.9));
+        border-color: rgba(59,130,246,0.35);
+    }
+    .awards-row > div {
+        padding: 0;
+        border: none;
+        margin-top: 4px;
+        font-size: 13px;
+        line-height: 1.55;
         color: var(--text-secondary);
     }
-    .awards-row-head > div:nth-child(4),
-    .awards-row-head > div:nth-child(5) {
-        display: none;
+    .awards-row > div:first-child { margin-top: 0; }
+    .awards-year {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--accent);
     }
+    .awards-row .badge { font-size: 11px; padding: 2px 8px; }
+
     .gallery {
         grid-template-columns: 1fr;
         grid-auto-rows: 180px;
@@ -2174,12 +2216,15 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
         grid-column: span 1;
         grid-row: span 1;
     }
+    /* 移动端简化组别动画：隐藏复杂粒子/数据流，保留简洁渐变底 */
+    .group-anim { display: none; }
+
     .form-row {
         grid-template-columns: 1fr;
     }
     .footer-grid {
         grid-template-columns: 1fr;
-        gap: 32px;
+        gap: 28px;
     }
     .footer-bottom {
         flex-direction: column;
@@ -2189,6 +2234,130 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
         bottom: 20px;
         right: 20px;
     }
+
+    /* 快速入口：手机端垂直堆叠（图标居中在上，文字在下） */
+    .quick-entry-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+    }
+    .quick-entry {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 20px 18px;
+        min-height: 0;
+    }
+    .quick-entry .qe-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+    }
+    .quick-entry .qe-icon svg { width: 24px; height: 24px; }
+    .quick-entry .qe-body { width: 100%; }
+    .quick-entry .qe-body h3 { font-size: 15px; margin-bottom: 3px; }
+    .quick-entry .qe-body p { font-size: 12.5px; line-height: 1.55; }
+    .quick-entry .qe-arrow {
+        position: absolute;
+        right: 14px;
+        bottom: 14px;
+        width: 28px;
+        height: 28px;
+        font-size: 0.8rem;
+    }
+    .quick-entry .qe-tag {
+        position: static;
+        display: inline-block;
+        font-size: 10px;
+        padding: 1px 7px;
+        margin-bottom: 4px;
+    }
+    .quick-entry .qe-corner { display: none; }
+
+    /* 底部导航栏：隐藏扫描线、HUD四角装饰、网格底纹 */
+    .mobi-nav-scan,
+    .mobi-nav-frame,
+    .mobi-nav .mnf { display: none; }
+    .mobi-nav::before { display: none; }
+    .mobi-nav-link.is-active::before { display: none; }
+    .mnl-num { display: none; }
+    .mnl-hot { display: none; }
+
+    /* 底部留白：给浮动导航留出空间，防止遮挡页面内容 */
+    #frontApp { padding-bottom: 120px; }
+    .back-top { bottom: calc(24px + 120px); right: 16px; }
+
+    /* 禁用花哨动画提升移动端性能 */
+    .page-index-grid-bg,
+    .hud-led-on,
+    .qe-caret,
+    .sn-dot,
+    .hud-blink,
+    .typewriter-cursor { animation: none; }
+    .hero-card::after { animation: none; }
+}
+
+/* ===== 小屏手机适配（< 480px）=====
+   仅在窄屏生效，不影响桌面端排版 */
+@media (max-width: 480px) {
+    .container { padding: 0 14px; }
+    .top-bar { padding: 6px 0; }
+    .top-bar-inner { padding: 0 14px; font-size: 11px; }
+    .top-bar-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 60vw; }
+    .hero { padding: 36px 0 32px; }
+    .hero-title { font-size: 22px; min-width: auto; line-height: 1.35; }
+    .hero-eyebrow { font-size: 11px; padding: 4px 10px; gap: 8px; margin-bottom: 16px; }
+    .hero-desc { font-size: 14px; line-height: 1.75; margin-bottom: 20px; }
+    .hero-actions { gap: 10px; }
+    .hero-actions .btn { padding: 9px 16px; font-size: 13px; }
+    .hero-stat-num { font-size: 22px; }
+    .hero-stat-label { font-size: 10.5px; }
+    .hero-stats { gap: 16px; margin-top: 28px; padding-top: 28px; }
+    .hero-card-body { padding: 14px 12px; font-size: 12px; line-height: 1.65; }
+
+    .section { padding: 40px 0; }
+    .section-head { margin-bottom: 24px; }
+    .section-title { font-size: 20px; }
+    .section-desc { font-size: 13px; }
+    .section-num { font-size: 11px; padding: 4px 8px; }
+
+    /* 快速入口：小屏单列，更紧凑 */
+    .quick-entry-grid { grid-template-columns: 1fr; gap: 12px; }
+    .quick-entry { padding: 18px 16px; gap: 8px; }
+    .quick-entry .qe-icon { width: 44px; height: 44px; }
+    .quick-entry .qe-icon svg { width: 22px; height: 22px; }
+    .quick-entry .qe-body h3 { font-size: 14.5px; }
+    .quick-entry .qe-body p { font-size: 12px; line-height: 1.55; }
+    .quick-entry .qe-arrow { width: 26px; height: 26px; right: 12px; bottom: 12px; }
+
+    .gallery { grid-auto-rows: 150px; gap: 10px; }
+    .gallery-item figcaption { padding: 12px; }
+    .gallery-item figcaption h4 { font-size: 14px; }
+    .gallery-item figcaption p { font-size: 11px; }
+
+    /* 奖项卡片 */
+    .awards-row { padding: 12px 14px; border-radius: 9px; }
+    .awards-row > div { font-size: 12.5px; margin-top: 3px; line-height: 1.5; }
+    .awards-year { font-size: 13px; }
+
+    /* 时间轴 */
+    .timeline { padding-left: 22px; }
+    .timeline-dot { left: -22px; width: 11px; height: 11px; }
+    .timeline-content { padding: 12px; }
+    .timeline-content h4 { font-size: 14.5px; }
+    .timeline-content p { font-size: 12px; }
+
+    .footer-grid { gap: 22px; }
+    .footer-bottom { gap: 8px; font-size: 12px; }
+
+    /* 底部导航更紧凑 */
+    .mobi-nav { left: 6px; right: 6px; bottom: 6px; padding: 5px 4px calc(5px + env(safe-area-inset-bottom, 0px)); }
+    .mobi-nav-link { padding: 5px 0 4px; }
+    .mnl-ico { width: 18px; height: 18px; }
+    .mnl-txt { font-size: 9.5px; }
+
+    /* 底部留白 */
+    #frontApp { padding-bottom: 108px; }
+    .back-top { right: 12px; bottom: calc(20px + 108px); width: 38px; height: 38px; font-size: 14px; }
 }
 
 /* ===== 鼠标交互动画 ===== */
@@ -8372,5 +8541,201 @@ body { perspective: none; }
 .home-cta-ghost:hover {
     background: var(--accent-bg);
     border-color: var(--accent-400);
+}
+
+/* ===================================================================
+   首页区域响应式修复
+   说明：首页基础样式写在全局响应式媒体查询之后（文件靠后位置），
+   导致全局 @media 中的 grid-template-columns 被后面的基础样式覆盖。
+   这里重新声明一次，放在文件末尾以确保级联顺序正确。
+   =================================================================== */
+
+/* 平板（≤1024px）：首页网格改两列 */
+@media (max-width: 1024px) {
+    .home-stats-grid,
+    .highlights-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .home-cta-inner {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 24px;
+    }
+}
+
+/* 手机（≤768px）：首页网格单列 + 卡片内部紧凑化 */
+@media (max-width: 768px) {
+    .home-stats-grid,
+    .highlights-grid,
+    .news-track {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+
+    /* 数据卡片：两列紧凑布局 */
+    .home-stat {
+        padding: 20px 18px;
+    }
+    .home-stat-num {
+        font-size: 30px;
+        letter-spacing: -0.01em;
+    }
+    .home-stat-num span {
+        font-size: 20px;
+    }
+    .home-stat-label {
+        font-size: 13px;
+        margin-bottom: 4px;
+    }
+    .home-stat p {
+        font-size: 12px;
+        line-height: 1.55;
+    }
+
+    /* 核心亮点卡片：手机端紧凑化 */
+    .highlight-card {
+        padding: 20px 18px;
+        border-radius: 12px;
+    }
+    .highlight-card::before {
+        width: 3px;
+    }
+    .highlight-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 9px;
+        margin-bottom: 12px;
+    }
+    .highlight-icon svg {
+        width: 20px;
+        height: 20px;
+    }
+    .highlight-card h4 {
+        font-size: 15px;
+        margin-bottom: 6px;
+        font-weight: 600;
+    }
+    .highlight-card > p {
+        font-size: 12.5px;
+        line-height: 1.7;
+        margin-bottom: 12px;
+    }
+    .highlight-points {
+        padding-top: 10px;
+    }
+    .highlight-points li {
+        font-size: 11.5px;
+        line-height: 1.5;
+        padding: 3px 0 3px 14px;
+    }
+
+    /* 近期动态：卡片内部紧凑化 */
+    .news-item {
+        padding: 18px;
+        gap: 14px;
+        border-radius: 12px;
+    }
+    .news-date {
+        width: 48px;
+        padding: 8px 0;
+        border-radius: 7px;
+    }
+    .news-month {
+        font-size: 20px;
+    }
+    .news-year {
+        font-size: 10px;
+    }
+    .news-content h4 {
+        font-size: 14.5px;
+        margin-bottom: 4px;
+    }
+    .news-content p {
+        font-size: 12px;
+        line-height: 1.6;
+    }
+
+    /* CTA 区域 */
+    .home-cta {
+        margin-top: 48px;
+        padding-top: 36px;
+    }
+    .home-cta-inner {
+        padding: 24px 20px;
+        border-radius: 14px;
+    }
+    .home-cta-actions {
+        flex-direction: column;
+        width: 100%;
+        gap: 10px;
+    }
+    .home-cta-btn {
+        width: 100%;
+        justify-content: center;
+        padding: 11px 18px;
+        font-size: 13.5px;
+    }
+
+    /* 首页区块头部 */
+    .home-highlights {
+        margin-top: 48px;
+        padding-top: 36px;
+    }
+    .home-highlights-desc {
+        font-size: 13px;
+        margin-bottom: 20px;
+        line-height: 1.7;
+    }
+}
+
+/* 小屏手机（≤480px）：进一步紧凑 */
+@media (max-width: 480px) {
+    .home-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+    .home-stat {
+        padding: 16px 14px;
+    }
+    .home-stat-num {
+        font-size: 26px;
+    }
+    .home-stat-num span {
+        font-size: 17px;
+    }
+    .home-stat-label {
+        font-size: 12px;
+    }
+    .home-stat p {
+        font-size: 11px;
+    }
+
+    .highlights-grid {
+        gap: 12px;
+    }
+    .highlight-card {
+        padding: 18px 16px;
+    }
+    .highlight-card h4 {
+        font-size: 14px;
+    }
+    .highlight-card > p {
+        font-size: 12px;
+    }
+
+    .news-item {
+        padding: 16px;
+        gap: 12px;
+    }
+    .news-date {
+        width: 42px;
+    }
+    .news-month {
+        font-size: 18px;
+    }
+
+    .home-cta-inner {
+        padding: 20px 16px;
+    }
 }
 
