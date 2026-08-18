@@ -9012,3 +9012,232 @@ body { perspective: none; }
     }
 }
 
+/* ===================================================================
+   ★ 移动端排版终极优化（≤768px）
+   统一间距系统、卡片样式、标题层级，让手机端整齐自然
+   放在文件末尾确保级联优先级最高
+   =================================================================== */
+@media (max-width: 768px) {
+
+    /* --- 统一间距系统 --- */
+    .container { padding: 0 16px; }
+    .section { padding: 40px 0; }
+    .section-head {
+        margin-bottom: 24px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    .section-num { font-size: 11px; padding: 3px 10px; }
+    .section-title { font-size: 22px; }
+    .section-title::after { width: 36px; height: 2px; margin-top: 8px; }
+    .section-desc { margin-left: 0; font-size: 12px; }
+
+    /* --- Hero 区优化 --- */
+    .hero { padding: 36px 0 32px; }
+    .hero-title { font-size: 24px; line-height: 1.35; }
+    .hero-eyebrow { font-size: 11px; padding: 4px 10px; gap: 6px; margin-bottom: 14px; }
+    .hero-desc { font-size: 13.5px; line-height: 1.7; margin-bottom: 20px; }
+    .hero-actions { gap: 10px; }
+    .hero-actions .btn { padding: 9px 16px; font-size: 13px; }
+    .hero-stats { grid-template-columns: repeat(2, 1fr); gap: 18px; margin-top: 28px; padding-top: 24px; }
+    .hero-stat-num { font-size: 26px; }
+    .hero-stat-label { font-size: 11px; }
+    .hero-card-body {
+        padding: 14px 14px;
+        font-size: 12px;
+        line-height: 1.65;
+        white-space: pre-wrap;
+        overflow-wrap: break-word;
+        word-break: normal;
+        overflow-x: auto;
+    }
+
+    /* --- 快速入口：两列卡片整齐排列 --- */
+    .quick-entry-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .quick-entry {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        padding: 18px 16px;
+        min-height: 0;
+    }
+    .quick-entry .qe-icon { width: 44px; height: 44px; border-radius: 10px; }
+    .quick-entry .qe-icon svg { width: 22px; height: 22px; }
+    .quick-entry .qe-body { width: 100%; }
+    .quick-entry .qe-body h3 { font-size: 14px; margin-bottom: 2px; }
+    .quick-entry .qe-body p { font-size: 12px; line-height: 1.5; }
+    .quick-entry .qe-arrow { right: 12px; bottom: 12px; width: 26px; height: 26px; font-size: 0.75rem; }
+    .quick-entry .qe-tag { position: static; display: inline-block; font-size: 9.5px; padding: 1px 6px; margin-bottom: 3px; }
+    .quick-entry .qe-corner { display: none; }
+
+    /* --- About 区块 --- */
+    .about-grid { grid-template-columns: 1fr; gap: 24px; }
+    .about-lead { font-size: 15px !important; line-height: 1.65 !important; margin-bottom: 18px !important; }
+    .about-main p { font-size: 13.5px; line-height: 1.7; margin-bottom: 14px; }
+    .about-list { grid-template-columns: 1fr; gap: 0; margin-top: 28px; }
+    .about-list-item { padding: 14px 0; gap: 12px; border-top: 1px solid var(--border); }
+    .about-list-item:last-child { border-bottom: 1px solid var(--border); }
+    .about-list-item h4 { font-size: 15px; }
+    .about-list-item p { font-size: 12.5px; line-height: 1.6; }
+    .info-card { position: static; padding: 20px 16px; border-radius: 12px; }
+    .info-card-title { font-size: 13px; margin-bottom: 12px; padding-bottom: 10px; }
+    .info-item { padding: 10px 0; font-size: 12.5px; }
+
+    /* --- Research 区块 --- */
+    .research-grid { grid-template-columns: 1fr; gap: 14px; }
+    .research-card { padding: 20px 16px; border-radius: 12px; }
+    .research-card h4 { font-size: 15px; margin-bottom: 6px; }
+    .research-card p { font-size: 12.5px; line-height: 1.65; }
+
+    /* --- Awards 区块 --- */
+    .awards-summary { grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 18px; }
+    .award-summary-item { padding: 16px 14px; border-radius: 10px; }
+    .awards-row { padding: 14px 16px; border-radius: 10px; }
+    .awards-row > div { font-size: 12.5px; margin-top: 4px; line-height: 1.55; }
+    .awards-year { font-size: 14px; }
+
+    /* --- Groups 区块 --- */
+    .gallery { grid-template-columns: 1fr; grid-auto-rows: 200px; gap: 12px; }
+    .gallery-item-lg { grid-column: span 1; grid-row: span 1; }
+    .gallery-item figcaption { padding: 14px; }
+    .gallery-item figcaption h4 { font-size: 14px; }
+    .gallery-item figcaption p { font-size: 11.5px; }
+
+    /* --- Teachers 区块 --- */
+    .teachers-grid { gap: 14px; }
+    .teacher-card { padding: 22px 18px 20px; border-radius: 12px; }
+
+    /* --- Join 区块 --- */
+    .join-grid { grid-template-columns: 1fr; gap: 24px; }
+    .form-row { grid-template-columns: 1fr; }
+
+    /* --- 首页数据/亮点/动态统一卡片样式 --- */
+    .home-stats-grid, .highlights-grid { grid-template-columns: 1fr; gap: 12px; }
+    .news-track { grid-template-columns: 1fr; gap: 12px; }
+    .home-stat { padding: 18px 16px; border-radius: 12px; }
+    .home-stat-num { font-size: 28px; }
+    .home-stat-num span { font-size: 18px; }
+    .home-stat-label { font-size: 13px; margin-bottom: 4px; }
+    .home-stat p { font-size: 12px; line-height: 1.55; }
+    .highlight-card { padding: 18px 16px; border-radius: 12px; }
+    .highlight-icon { width: 38px; height: 38px; border-radius: 9px; margin-bottom: 10px; }
+    .highlight-icon svg { width: 20px; height: 20px; }
+    .highlight-card h4 { font-size: 14.5px; margin-bottom: 6px; }
+    .highlight-card > p { font-size: 12.5px; line-height: 1.65; margin-bottom: 10px; }
+    .highlight-points { padding-top: 8px; }
+    .highlight-points li { font-size: 11.5px; line-height: 1.5; padding: 2px 0 2px 14px; }
+    .news-item { padding: 16px; gap: 12px; border-radius: 12px; }
+    .news-date { width: 44px; padding: 7px 0; border-radius: 7px; }
+    .news-month { font-size: 18px; }
+    .news-year { font-size: 9.5px; }
+    .news-content h4 { font-size: 14px; margin-bottom: 4px; }
+    .news-content p { font-size: 12px; line-height: 1.55; }
+
+    /* --- CTA 区块 --- */
+    .home-cta { margin-top: 40px; padding-top: 32px; }
+    .home-cta-inner { padding: 22px 18px; border-radius: 12px; }
+    .home-cta-actions { flex-direction: column; width: 100%; gap: 10px; }
+    .home-cta-btn { width: 100%; justify-content: center; }
+
+    /* --- Footer --- */
+    .footer-grid { grid-template-columns: 1fr; gap: 22px; }
+    .footer-bottom { flex-direction: column; text-align: center; gap: 8px; font-size: 12px; }
+
+    /* --- 底部导航 + 留白 --- */
+    .mobi-nav-scan, .mobi-nav-frame, .mobi-nav .mnf { display: none; }
+    .mobi-nav::before { display: none; }
+    .mobi-nav-link.is-active::before { display: none; }
+    .mnl-num, .mnl-hot { display: none; }
+    .mobi-nav { left: 8px; right: 8px; bottom: 8px; padding: 6px 4px calc(6px + env(safe-area-inset-bottom, 0px)); border-radius: 14px; }
+    .mobi-nav-link { padding: 6px 0 4px; }
+    .mnl-ico { width: 19px; height: 19px; }
+    .mnl-txt { font-size: 9.5px; }
+    #frontApp { padding-bottom: 110px; }
+    .back-top { right: 14px; bottom: calc(24px + 110px); width: 38px; height: 38px; font-size: 14px; }
+
+    /* --- 禁用花哨动画 --- */
+    .page-index-grid-bg, .hud-led-on, .qe-caret, .sn-dot, .hud-blink, .typewriter-cursor { animation: none; }
+    .hero-card::after { animation: none; }
+}
+
+/* ===================================================================
+   ★ 小屏手机终极优化（≤480px）
+   =================================================================== */
+@media (max-width: 480px) {
+    .container { padding: 0 14px; }
+    .section { padding: 36px 0; }
+    .section-head { margin-bottom: 20px; gap: 6px; }
+    .section-title { font-size: 19px; }
+    .section-num { font-size: 10px; padding: 3px 8px; }
+    .section-desc { font-size: 11px; }
+
+    .hero { padding: 32px 0 28px; }
+    .hero-title { font-size: 21px; line-height: 1.35; }
+    .hero-eyebrow { font-size: 10px; padding: 3px 8px; gap: 5px; margin-bottom: 12px; }
+    .hero-desc { font-size: 13px; line-height: 1.7; margin-bottom: 18px; }
+    .hero-actions .btn { padding: 8px 14px; font-size: 12.5px; }
+    .hero-stats { gap: 14px; margin-top: 24px; padding-top: 20px; }
+    .hero-stat-num { font-size: 22px; }
+    .hero-stat-label { font-size: 10.5px; }
+    .hero-card-body { padding: 12px 12px; font-size: 11.5px; line-height: 1.6; }
+
+    .quick-entry-grid { grid-template-columns: 1fr; gap: 10px; }
+    .quick-entry { padding: 16px 14px; gap: 6px; }
+    .quick-entry .qe-icon { width: 40px; height: 40px; }
+    .quick-entry .qe-icon svg { width: 20px; height: 20px; }
+    .quick-entry .qe-body h3 { font-size: 13.5px; }
+    .quick-entry .qe-body p { font-size: 11.5px; }
+    .quick-entry .qe-arrow { width: 24px; height: 24px; right: 10px; bottom: 10px; }
+
+    .about-lead { font-size: 14px !important; line-height: 1.6 !important; margin-bottom: 16px !important; }
+    .about-main p { font-size: 13px; line-height: 1.65; margin-bottom: 12px; }
+    .about-list-item { padding: 12px 0; gap: 10px; }
+    .about-list-item h4 { font-size: 14px; }
+    .about-list-item p { font-size: 12px; }
+    .info-card { padding: 16px 14px; }
+    .info-item { padding: 8px 0; font-size: 12px; }
+
+    .research-card { padding: 18px 14px; }
+    .research-card h4 { font-size: 14px; }
+    .research-card p { font-size: 12px; }
+
+    .awards-summary { grid-template-columns: 1fr; gap: 8px; }
+    .award-summary-item { padding: 14px 12px; }
+    .awards-row { padding: 12px 14px; border-radius: 9px; }
+    .awards-row > div { font-size: 12px; margin-top: 3px; }
+    .awards-year { font-size: 13px; }
+
+    .gallery { grid-auto-rows: 180px; gap: 10px; }
+    .gallery-item figcaption { padding: 12px; }
+    .gallery-item figcaption h4 { font-size: 13.5px; }
+    .gallery-item figcaption p { font-size: 11px; }
+
+    .teacher-card { padding: 20px 16px 18px; }
+
+    .home-stat { padding: 16px 14px; }
+    .home-stat-num { font-size: 24px; }
+    .home-stat-num span { font-size: 16px; }
+    .highlight-card { padding: 16px 14px; }
+    .highlight-icon { width: 36px; height: 36px; margin-bottom: 8px; }
+    .highlight-card h4 { font-size: 14px; }
+    .highlight-card > p { font-size: 12px; margin-bottom: 8px; }
+    .news-item { padding: 14px; gap: 10px; }
+    .news-date { width: 40px; padding: 6px 0; }
+    .news-month { font-size: 16px; }
+    .news-content h4 { font-size: 13.5px; }
+    .news-content p { font-size: 11.5px; }
+
+    .home-cta-inner { padding: 18px 16px; border-radius: 10px; }
+
+    .footer-grid { gap: 18px; }
+    .footer-bottom { gap: 6px; font-size: 11px; }
+
+    .mobi-nav { left: 6px; right: 6px; bottom: 6px; padding: 5px 4px calc(5px + env(safe-area-inset-bottom, 0px)); }
+    .mobi-nav-link { padding: 5px 0 3px; }
+    .mnl-ico { width: 18px; height: 18px; }
+    .mnl-txt { font-size: 9px; }
+    #frontApp { padding-bottom: 100px; }
+    .back-top { right: 12px; bottom: calc(20px + 100px); width: 36px; height: 36px; font-size: 13px; }
+}
+
