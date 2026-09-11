@@ -697,9 +697,10 @@
         if (tb) {
             tb.innerHTML = list.map(a => {
                 const status = a.status || 'pending';
+                const isOpen = currentDetailId === a.id;
                 return `
-                <tr data-id="${a.id}" class="${newIdSet.has(a.id)?'new-row':''}">
-                    <td class="cell-name">${escape(a.name)}</td>
+                <tr data-id="${a.id}" class="main-row${isOpen?' is-open':''}${newIdSet.has(a.id)?' new-row':''}">
+                    <td class="cell-name"><span class="row-caret"></span>${escape(a.name)}</td>
                     <td class="cell-mono">${escape(a.studentId)}</td>
                     <td>${escape(a.grade||'-')}</td>
                     <td>${escape(a.major||'-')}</td>
@@ -717,15 +718,33 @@
                             <button class="action-btn danger" data-act="delete" title="删除">✕</button>
                         </div>
                     </td>
+                </tr>
+                <tr class="detail-row" data-detail="${a.id}"${isOpen?'':' hidden'}>
+                    <td colspan="9">
+                        <div class="admin-detail-panel inline-detail">${buildDetailHtml(a, status)}</div>
+                    </td>
                 </tr>`;
             }).join('');
 
-            tb.querySelectorAll('tr').forEach(tr => {
+            tb.querySelectorAll('tr.main-row').forEach(tr => {
                 const id = tr.dataset.id;
                 tr.onclick = () => handleAction('view', id);
                 tr.querySelectorAll('.action-btn').forEach(btn => {
                     btn.onclick = e => { e.stopPropagation(); handleAction(btn.dataset.act, id); };
                 });
+            });
+
+            // 展开行内的操作按钮（拒绝 / 标记已处理 / 删除）
+            tb.querySelectorAll('tr.detail-row').forEach(tr => {
+                const id = tr.dataset.detail;
+                const item = allData.find(a => a.id === id);
+                if (!item) return;
+                const bp = tr.querySelector('.inline-btn-process');
+                const br = tr.querySelector('.inline-btn-reject');
+                const bd = tr.querySelector('.inline-btn-delete');
+                if (bp) bp.onclick = e => { e.stopPropagation(); detailSetStatus(item, item.status==='processed'?'pending':'processed'); };
+                if (br) br.onclick = e => { e.stopPropagation(); detailSetStatus(item, item.status==='rejected'?'pending':'rejected'); };
+                if (bd) bd.onclick = e => { e.stopPropagation(); handleAction('delete', id); };
             });
         }
     }
@@ -737,10 +756,11 @@
             if (!item) return;
 
             if (action === 'view') {
-                showDetailPanel(item);
-                const panel = $('detailPanel');
-                if (panel && panel.scrollIntoView) {
-                    panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                // 行内展开 / 收起（再次点击同一行则收起）
+                if (currentDetailId === item.id) {
+                    hideDetailPanel();
+                } else {
+                    showDetailPanel(item);
                 }
                 return;
             }
@@ -806,71 +826,70 @@
         try { localStorage.setItem(STORAGE_KEY, JSON.stringify(allData)); } catch {}
     }
 
-    // ===== 详情面板 =====
+    // ===== 详情（行内展开） =====
     let currentDetailId = null;
+
+    // 单条申请的完整表单内容（基础信息 + 技术经历 + 加入动机 + 操作按钮）
+    function buildDetailHtml(item, status) {
+        status = status || item.status || 'pending';
+        return `
+            <div class="detail-panel-head">
+                <div class="detail-panel-title">
+                    <span class="detail-name">${escape(item.name)}</span>
+                    <span class="group-tag">${escape(item.direction||'-')}</span>
+                    <span class="badge-status badge-${status}">${statusText(status)}</span>
+                </div>
+                <div class="detail-panel-time">提交于 ${fmtTime(item.submitTime)}</div>
+            </div>
+            <div class="detail-grid">
+                <div class="detail-field">
+                    <div class="detail-field-label">学号</div>
+                    <div class="detail-field-value mono">${escape(item.studentId||'-')}</div>
+                </div>
+                <div class="detail-field">
+                    <div class="detail-field-label">年级</div>
+                    <div class="detail-field-value">${escape(item.grade||'-')}</div>
+                </div>
+                <div class="detail-field">
+                    <div class="detail-field-label">专业班级</div>
+                    <div class="detail-field-value">${escape(item.major||'-')}</div>
+                </div>
+                <div class="detail-field">
+                    <div class="detail-field-label">手机</div>
+                    <div class="detail-field-value mono">${escape(item.phone||'-')}</div>
+                </div>
+                <div class="detail-field">
+                    <div class="detail-field-label">邮箱</div>
+                    <div class="detail-field-value mono">${escape(item.email||'-')}</div>
+                </div>
+            </div>
+            <div class="detail-section">
+                <div class="detail-section-title">技术基础与经历</div>
+                <div class="detail-text">${escape(item.experience||'（未填写）')}</div>
+            </div>
+            <div class="detail-section">
+                <div class="detail-section-title">加入动机</div>
+                <div class="detail-text">${escape(item.motivation||'（未填写）')}</div>
+            </div>
+            <div class="detail-panel-actions">
+                <button type="button" class="modal-btn inline-btn-reject">${status==='rejected'?'取消拒绝':'拒绝'}</button>
+                <button type="button" class="modal-btn success inline-btn-process">${status==='processed'?'取消标记':'标记已处理'}</button>
+                <button type="button" class="modal-btn danger inline-btn-delete">删除申请</button>
+            </div>
+        `;
+    }
 
     function showDetailPanel(item) {
         try {
             currentDetailId = item.id;
-            const status = item.status || 'pending';
             const empty = $('detailEmpty');
             const content = $('detailContent');
             if (empty) empty.hidden = true;
-            if (content) {
-                content.hidden = false;
-                content.innerHTML = `
-                    <div class="detail-panel-head">
-                        <div class="detail-panel-title">
-                            <span class="detail-name">${escape(item.name)}</span>
-                            <span class="group-tag">${escape(item.direction||'-')}</span>
-                            <span class="badge-status badge-${status}">${statusText(status)}</span>
-                        </div>
-                        <div class="detail-panel-time">提交于 ${fmtTime(item.submitTime)}</div>
-                    </div>
-                    <div class="detail-grid">
-                        <div class="detail-field">
-                            <div class="detail-field-label">学号</div>
-                            <div class="detail-field-value mono">${escape(item.studentId||'-')}</div>
-                        </div>
-                        <div class="detail-field">
-                            <div class="detail-field-label">年级</div>
-                            <div class="detail-field-value">${escape(item.grade||'-')}</div>
-                        </div>
-                        <div class="detail-field">
-                            <div class="detail-field-label">专业</div>
-                            <div class="detail-field-value">${escape(item.major||'-')}</div>
-                        </div>
-                        <div class="detail-field">
-                            <div class="detail-field-label">手机</div>
-                            <div class="detail-field-value mono">${escape(item.phone||'-')}</div>
-                        </div>
-                        <div class="detail-field">
-                            <div class="detail-field-label">邮箱</div>
-                            <div class="detail-field-value mono">${escape(item.email||'-')}</div>
-                        </div>
-                    </div>
-                    <div class="detail-section">
-                        <div class="detail-section-title">技术基础与经历</div>
-                        <div class="detail-text">${escape(item.experience||'（未填写）')}</div>
-                    </div>
-                    <div class="detail-section">
-                        <div class="detail-section-title">加入动机</div>
-                        <div class="detail-text">${escape(item.motivation||'（未填写）')}</div>
-                    </div>
-                    <div class="detail-panel-actions">
-                        <button class="modal-btn" id="mBtnReject">${status==='rejected'?'取消拒绝':'拒绝'}</button>
-                        <button class="modal-btn success" id="mBtnProcess">${status==='processed'?'取消标记':'标记已处理'}</button>
-                        <button class="modal-btn danger" id="mBtnDelete">删除申请</button>
-                    </div>
-                `;
-
-                const btnProcess = $('mBtnProcess');
-                const btnReject = $('mBtnReject');
-                const btnDelete = $('mBtnDelete');
-                if (btnProcess) btnProcess.onclick = () => detailSetStatus(item, item.status==='processed'?'pending':'processed');
-                if (btnReject) btnReject.onclick = () => detailSetStatus(item, item.status==='rejected'?'pending':'rejected');
-                if (btnDelete) btnDelete.onclick = () => handleAction('delete', item.id);
-            }
+            if (content) content.hidden = true;
+            renderTable();
+            // 展开后把该行轻量滚动到可视区（nearest 不会把页面猛拽到顶部）
+            const row = document.querySelector('tr.detail-row[data-detail="' + item.id + '"]');
+            if (row && row.scrollIntoView) row.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         } catch (err) {
             console.error('showDetailPanel error:', err);
         }
@@ -909,6 +928,7 @@
         const content = $('detailContent');
         if (empty) empty.hidden = false;
         if (content) content.hidden = true;
+        renderTable();
     }
 
     // ===== 侧边栏 & 搜索 =====

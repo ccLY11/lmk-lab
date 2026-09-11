@@ -607,6 +607,46 @@ ul { list-style: none; }
     line-height: 1.5;
 }
 
+/* ===== 行内展开详情 ===== */
+.data-table tbody tr.main-row { cursor: pointer; }
+.row-caret {
+    display: inline-block;
+    width: 0;
+    height: 0;
+    margin-right: 8px;
+    border-left: 5px solid var(--text-muted);
+    border-top: 4px solid transparent;
+    border-bottom: 4px solid transparent;
+    vertical-align: middle;
+    opacity: 0.65;
+    transition: transform 0.15s ease;
+}
+tr.is-open .row-caret { transform: rotate(90deg); }
+.data-table tbody tr.detail-row { background: var(--bg); }
+.data-table tbody tr.detail-row > td {
+    padding: 0;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+}
+.inline-detail.admin-detail-panel {
+    margin: 0;
+    border: none;
+    border-radius: 0;
+    min-height: 0;
+    border-top: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    background: var(--bg);
+}
+/* 关键：前台 style.css 的弹窗入场动画把 .detail-section 初始设为 opacity:0，
+   后台详情区复用了同名类会导致"技术基础与经历/加入动机"不可见，这里必须复位 */
+.admin-detail-panel .detail-section {
+    opacity: 1;
+    transform: none;
+    transition: none;
+}
+/* 旧的底部固定详情面板已改为表格行内展开，隐藏避免重复 */
+#detailPanel { display: none; }
+
 .badge-status {
     display: inline-block;
     padding: 2px 9px;

@@ -488,6 +488,45 @@ if (joinForm) {
         btn.disabled = true;
         btn.textContent = "提交中...";
 
+        // ===== 学号查重：同一个学号不允许重复提交 =====
+        const studentIdVal = document.getElementById("studentId").value.trim();
+        try {
+            btn.textContent = "正在校验学号...";
+            const dupCheck = await fetch(
+                SUPABASE_URL + "/rest/v1/applications?student_id=eq." + encodeURIComponent(studentIdVal) + "&select=id,status",
+                {
+                    method: "GET",
+                    headers: {
+                        "apikey": SUPABASE_KEY,
+                        "Authorization": "Bearer " + SUPABASE_KEY,
+                        "Prefer": "return=representation"
+                    }
+                }
+            );
+            if (dupCheck.ok) {
+                const existing = await dupCheck.json();
+                if (Array.isArray(existing) && existing.length > 0) {
+                    showToast("该学号 " + studentIdVal + " 已提交过申请，请勿重复提交", "error");
+                    btn.disabled = false;
+                    btn.textContent = originalText;
+                    return;
+                }
+            } else {
+                // 查询失败：不放行，避免绕过查重
+                console.warn("[查重] 查询失败:", dupCheck.status);
+                showToast("学号校验失败，请检查网络后重试", "error");
+                btn.disabled = false;
+                btn.textContent = originalText;
+                return;
+            }
+        } catch (checkErr) {
+            console.warn("[查重] 请求异常:", checkErr);
+            showToast("网络异常，无法完成学号校验，请稍后重试", "error");
+            btn.disabled = false;
+            btn.textContent = originalText;
+            return;
+        }
+
         // 收集表单数据（注意：数据库是 snake_case，前端用 camelCase）
         const nowIso = new Date().toISOString();
         const id = "APP" + Date.now() + Math.floor(Math.random() * 1000);
